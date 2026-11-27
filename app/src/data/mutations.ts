@@ -66,14 +66,16 @@ export const deleteTransaction = (data: AppData, id: string): AppData => {
     throw new Error('NOT_FOUND');
   }
   assertOpen(data, current.date);
-  return { ...data, transactions: data.transactions.filter((tx) => tx.id !== id) };
+  const skipped = current.recurringId ? [...(data.skippedRecurring ?? []), recurringKey(current.recurringId, monthOf(current.date))] : data.skippedRecurring;
+  return { ...data, transactions: data.transactions.filter((tx) => tx.id !== id), skippedRecurring: skipped };
 };
 
 /** Creates the recurring expenses that are due by `today` and not generated yet. */
 export const generateRecurring = (data: AppData, today: IsoDate): AppData => {
-  const generated = new Set(
-    data.transactions.filter((tx) => tx.recurringId).map((tx) => recurringKey(tx.recurringId!, monthOf(tx.date))),
-  );
+  const generated = new Set([
+    ...data.transactions.filter((tx) => tx.recurringId).map((tx) => recurringKey(tx.recurringId!, monthOf(tx.date))),
+    ...(data.skippedRecurring ?? []),
+  ]);
   const created: Transaction[] = pendingRecurringExpenses(data.recurring, generated, today)
     .filter((item) => !isClosed(data, item.date))
     .map((item) => ({

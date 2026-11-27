@@ -19,6 +19,8 @@ export interface AppData {
   payrollTemplate: PayrollTemplate;
   recurring: RecurringExpense[];
   closings: MonthClosing[];
+  /** Recurring occurrences ("id|month") the user deleted, so they are not generated again. */
+  skippedRecurring?: string[];
   lastExportAt?: IsoDate;
 }
 
