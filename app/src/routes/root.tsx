@@ -41,8 +41,8 @@ const TABS: Tab[] = [
 ];
 
 const MENU_ITEMS = [
-  { to: '/add?kind=income', label: 'Ingreso', color: 'success.main' },
-  { to: '/add?kind=expense', label: 'Gasto', color: 'error.main' },
+  { to: '/add?kind=income', label: 'Ingreso', color: 'success.main', line: '2,20 12,12 19,17 31,5 36,9', tip: 'M26 4 33 4 36 11' },
+  { to: '/add?kind=expense', label: 'Gasto', color: 'error.main', line: '2,4 12,12 19,7 31,19 36,15', tip: 'M26 20 33 20 36 13' },
 ];
 
 const DockTab = ({ tab, active }: { tab: Tab; active: boolean }) => (
@@ -177,9 +177,14 @@ export const Layout = () => {
                 color: 'text.primary',
                 fontSize: 17,
                 fontWeight: 800,
+                gap: 1.25,
                 boxShadow: '0 10px 24px rgba(0, 0, 0, 0.3)',
               }}
             >
+              <Box component="svg" aria-hidden viewBox="0 0 40 24" sx={{ width: 30, height: 18, color: item.color }} fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points={item.line} />
+                <path d={item.tip} />
+              </Box>
               {item.label}
             </ButtonBase>
           </Zoom>

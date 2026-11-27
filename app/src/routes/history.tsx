@@ -46,7 +46,7 @@ export const HistoryScreen = () => {
                 background:
                   row.savingsCents < 0
                     ? 'var(--mui-palette-error-main)'
-                    : 'linear-gradient(180deg, var(--mui-palette-info-main), color-mix(in srgb, var(--mui-palette-info-main) 45%, transparent))',
+                    : 'linear-gradient(180deg, var(--mui-palette-secondary-main), color-mix(in srgb, var(--mui-palette-secondary-main) 45%, transparent))',
                 opacity: row.savingsCents === 0 ? 0.25 : 1,
                 transformOrigin: 'bottom',
                 animation: `rise 700ms ${index * 60}ms cubic-bezier(0.2, 0.8, 0.2, 1) both`,
@@ -73,7 +73,7 @@ export const HistoryScreen = () => {
               {monthLabel(row.month)}
               {data.closings.some((closing) => closing.month === row.month) ? ' (cerrado)' : ''}
             </Typography>
-            <AmountText cents={row.savingsCents} plus />
+            <AmountText cents={row.savingsCents} plus positive="savings" />
           </Stack>
         ))}
       </Box>
