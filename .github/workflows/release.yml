@@ -1,28 +1,46 @@
-﻿name: Build APK
+﻿name: Release
 
-# Builds the Android APK only when a GitHub Release is published (or manually),
-# and attaches it to that release.
-# - With the signing secrets configured (see docs/SIGNING.md) it builds a SIGNED release APK
-#   that installs over the previous version without losing data.
-# - Without them (for example in a fork) it builds a debug APK.
-# Pull requests are already checked by ci.yml, so this does not run on every push.
+# Builds the Android APK and publishes a GitHub Release with it attached.
+# Two ways to start it:
+#   - Push a tag like v0.2.0:   git tag v0.2.0 && git push origin v0.2.0
+#   - Run it by hand (Actions > Release > Run workflow) and type the version, e.g. 0.2.0
+#     (the tag is created on main for you).
+# With the signing secrets (docs/SIGNING.md) the APK is SIGNED and installs over the previous
+# version without losing data. Without them it is a debug APK and the release is marked pre-release.
 on:
-  release:
-    types: [published]
+  push:
+    tags: ["v*"]
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Version without the v (for example 0.2.0)"
+        required: true
 
 permissions:
   contents: write
 
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
-  apk:
+  release:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      VERSION: ${{ inputs.version || github.ref_name }}
     defaults:
       run:
         working-directory: app
     steps:
       - uses: actions/checkout@v4
+
+      - name: Work out the version
+        run: |
+          V="${VERSION#v}"
+          echo "$V" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.]+)?$' || { echo "Invalid version: $V"; exit 1; }
+          echo "HOLGURA_VERSION=$V" >> "$GITHUB_ENV"
+          echo "TAG=v$V" >> "$GITHUB_ENV"
 
       - uses: actions/setup-node@v4
         with:
@@ -37,6 +55,7 @@ jobs:
           cache: gradle
 
       - run: npm ci
+      - run: npx tsc -b
       - run: npm test
       - run: npm run build
       - run: npx cap sync android
@@ -70,19 +89,20 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
 
-      - name: Rename APK
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SIGNED: ${{ steps.signing.outputs.signed }}
+        working-directory: ${{ github.workspace }}
         run: |
           mkdir -p "$RUNNER_TEMP/out"
-          cp app/android/app/build/outputs/apk/*/*.apk "$RUNNER_TEMP/out/holgura-${{ github.event.release.tag_name || github.run_number }}.apk"
-        working-directory: ${{ github.workspace }}
+          cp app/android/app/build/outputs/apk/*/*.apk "$RUNNER_TEMP/out/holgura-$TAG.apk"
+          FLAGS=""
+          if [ "$SIGNED" != "true" ]; then FLAGS="--prerelease"; fi
+          gh release create "$TAG" "$RUNNER_TEMP/out/holgura-$TAG.apk" \
+            --target "$GITHUB_SHA" --title "Holgura $TAG" --generate-notes $FLAGS
 
       - uses: actions/upload-artifact@v4
         with:
           name: holgura-apk
           path: ${{ runner.temp }}/out/*.apk
-
-      - name: Attach APK to the release
-        if: github.event_name == 'release'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh release upload "${{ github.event.release.tag_name }}" "$RUNNER_TEMP"/out/*.apk --clobber
