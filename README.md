@@ -17,9 +17,7 @@ Sin conexión, sin cuentas y sin servidores: tus datos no salen de tu móvil.
 
 <br>
 
-<img src="docs/screenshots/inicio-oscuro.png" width="210" alt="Inicio en modo oscuro: dinero disponible, gráfica del mes, cuentas y gasto por categoría">
-<img src="docs/screenshots/anadir-oscuro.png" width="210" alt="Añadir un gasto con teclado numérico y categorías">
-<img src="docs/screenshots/movimientos-oscuro.png" width="210" alt="Movimientos del mes agrupados por día">
+<img src="docs/screenshots/hero.png" width="760" alt="Holgura en tres pantallas: añadir un gasto, el inicio con el dinero disponible y el registro de la nómina">
 
 </div>
 
@@ -36,14 +34,24 @@ Sin conexión, sin cuentas y sin servidores: tus datos no salen de tu móvil.
 | 💾 **Copia de seguridad** | Un fichero que guardas donde quieras y restauras en otro móvil. |
 | 🌗 **Claro y oscuro** | Sigue el modo de tu móvil. |
 
+### Así se apunta un gasto
+
+<p align="center">
+  <img src="docs/screenshots/demo.gif" width="300" alt="Animación: se teclea 42,50 €, se elige la categoría Ocio y se guarda; el dinero disponible baja">
+</p>
+
 <details>
 <summary>Más capturas</summary>
 <br>
 <p align="center">
-  <img src="docs/screenshots/ahorro-oscuro.png" width="200" alt="Histórico de ahorro mes a mes">
-  <img src="docs/screenshots/fijos-oscuro.png" width="200" alt="Gastos fijos con interruptor para pausarlos">
-  <img src="docs/screenshots/ajustes-oscuro.png" width="200" alt="Ajustes: reparto de la nómina, destinos, categorías y copia de seguridad">
-  <img src="docs/screenshots/inicio-claro.png" width="200" alt="Inicio en modo claro">
+  <img src="docs/screenshots/movimientos-oscuro.png" width="220" alt="Movimientos del mes agrupados por día">
+  <img src="docs/screenshots/ahorro-oscuro.png" width="220" alt="Histórico de ahorro mes a mes">
+  <img src="docs/screenshots/fijos-oscuro.png" width="220" alt="Gastos fijos con interruptor para pausarlos">
+</p>
+<p align="center">
+  <img src="docs/screenshots/ajustes-oscuro.png" width="220" alt="Ajustes: reparto de la nómina, destinos, categorías y copia de seguridad">
+  <img src="docs/screenshots/inicio-claro.png" width="220" alt="Inicio en modo claro">
+  <img src="docs/screenshots/nomina-claro.png" width="220" alt="Registro de la nómina en modo claro">
 </p>
 </details>
 
