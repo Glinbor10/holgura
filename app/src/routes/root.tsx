@@ -34,8 +34,8 @@ interface Tab {
   icon: ReactElement;
 }
 
-const LEFT_TABS: Tab[] = [{ path: '/', also: ['/history'], label: 'Inicio', icon: <HomeIcon /> }];
-const RIGHT_TABS: Tab[] = [
+const TABS: Tab[] = [
+  { path: '/', also: ['/history'], label: 'Inicio', icon: <HomeIcon /> },
   { path: '/movements', label: 'Movimientos', icon: <ListAltIcon /> },
   { path: '/settings', also: ['/recurring', '/close'], label: 'Configuración', icon: <SettingsBrushIcon /> },
 ];
@@ -83,48 +83,52 @@ export const Layout = () => {
             mx: 'auto',
             width: 'calc(100% - 24px)',
             maxWidth: 520,
-            height: 68,
-            display: 'grid',
-            gridTemplateColumns: '1fr 76px 1fr 1fr',
-            alignItems: 'stretch',
-            borderRadius: '28px',
-            border: 1,
-            borderColor: 'divider',
-            bgcolor: 'color-mix(in srgb, var(--mui-palette-background-paper) 84%, transparent)',
-            backdropFilter: 'blur(18px)',
-            WebkitBackdropFilter: 'blur(18px)',
-            boxShadow: '0 12px 32px rgba(0, 0, 0, 0.28)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.25,
           }}
         >
-          {LEFT_TABS.map((tab) => (
-            <DockTab key={tab.path} tab={tab} active={pathname === tab.path || (tab.also ?? []).includes(pathname)} />
-          ))}
-          <Box sx={{ display: 'grid', placeItems: 'center' }}>
-            <Box
-              component={Link}
-              to="/add"
-              viewTransition
-              aria-label="Apuntar un movimiento"
-              sx={{
-                width: 56,
-                height: 56,
-                mt: -3,
-                borderRadius: '50%',
-                display: 'grid',
-                placeItems: 'center',
-                color: '#fff',
-                background: 'linear-gradient(135deg, #3B55F0 0%, #7A5CFA 100%)',
-                boxShadow: '0 10px 24px rgba(91, 92, 250, 0.5)',
-                transition: 'transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1)',
-                '&:active': { transform: 'scale(0.92)' },
-              }}
-            >
-              <AddIcon sx={{ fontSize: 30 }} />
-            </Box>
+          <Box
+            sx={{
+              flex: 1,
+              height: 68,
+              display: 'grid',
+              gridTemplateColumns: `repeat(${TABS.length}, 1fr)`,
+              alignItems: 'stretch',
+              borderRadius: '28px',
+              border: 1,
+              borderColor: 'divider',
+              bgcolor: 'color-mix(in srgb, var(--mui-palette-background-paper) 84%, transparent)',
+              backdropFilter: 'blur(18px)',
+              WebkitBackdropFilter: 'blur(18px)',
+              boxShadow: '0 12px 32px rgba(0, 0, 0, 0.28)',
+            }}
+          >
+            {TABS.map((tab) => (
+              <DockTab key={tab.path} tab={tab} active={pathname === tab.path || (tab.also ?? []).includes(pathname)} />
+            ))}
           </Box>
-          {RIGHT_TABS.map((tab) => (
-            <DockTab key={tab.path} tab={tab} active={pathname === tab.path || (tab.also ?? []).includes(pathname)} />
-          ))}
+          <Box
+            component={Link}
+            to="/add"
+            viewTransition
+            aria-label="Apuntar un movimiento"
+            sx={{
+              width: 68,
+              height: 68,
+              flexShrink: 0,
+              borderRadius: '50%',
+              display: 'grid',
+              placeItems: 'center',
+              color: '#fff',
+              background: 'linear-gradient(135deg, #3B55F0 0%, #7A5CFA 100%)',
+              boxShadow: '0 10px 24px rgba(91, 92, 250, 0.5)',
+              transition: 'transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1)',
+              '&:active': { transform: 'scale(0.92)' },
+            }}
+          >
+            <AddIcon sx={{ fontSize: 32 }} />
+          </Box>
         </Box>
       )}
     </Box>
