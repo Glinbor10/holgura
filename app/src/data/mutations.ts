@@ -207,3 +207,13 @@ export const setPayrollTemplate = (data: AppData, payrollTemplate: PayrollTempla
   ...data,
   payrollTemplate,
 });
+
+/** Sets how much a savings destination gets from each payroll (0 clears it). Spending gets the rest. */
+export const setPayrollLine = (data: AppData, destinationId: string, amountCents: Cents): AppData => {
+  if (data.destinations.find((d) => d.id === destinationId)?.kind === 'SPENDING') {
+    throw new Error('SPENDING_GETS_THE_REST');
+  }
+  const others = data.payrollTemplate.lines.filter((line) => line.destinationId !== destinationId);
+  const lines = amountCents > 0 ? [...others, { destinationId, amountCents }] : others;
+  return { ...data, payrollTemplate: { ...data.payrollTemplate, lines } };
+};

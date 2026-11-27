@@ -9,6 +9,7 @@ import {
   deleteTransaction,
   generateRecurring,
   reopenMonth,
+  setPayrollLine,
 } from './mutations';
 import { available, destinationBalance } from '../domain/balances';
 
@@ -94,5 +95,20 @@ describe('destinations', () => {
       fundsMonth: '2026-11',
     });
     expect(() => archiveDestination(data, SAVINGS_ID)).toThrow();
+  });
+});
+
+describe('payroll amount per destination', () => {
+  it('sets, replaces and clears the amount a destination gets from each payroll', () => {
+    const base = createInitialData();
+    const set = setPayrollLine(base, SAVINGS_ID, 30000);
+    expect(set.payrollTemplate.lines).toEqual([{ destinationId: SAVINGS_ID, amountCents: 30000 }]);
+    const replaced = setPayrollLine(set, SAVINGS_ID, 45000);
+    expect(replaced.payrollTemplate.lines).toEqual([{ destinationId: SAVINGS_ID, amountCents: 45000 }]);
+    expect(setPayrollLine(replaced, SAVINGS_ID, 0).payrollTemplate.lines).toEqual([]);
+  });
+
+  it('refuses to set a fixed amount on the spending destination, which gets the rest', () => {
+    expect(() => setPayrollLine(createInitialData(), SPENDING_ID, 1000)).toThrow('SPENDING_GETS_THE_REST');
   });
 });
