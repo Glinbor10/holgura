@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyTemplate, defaultFundsMonth } from './payrollSplit';
+import { applyTemplate, defaultFundsMonth, PAYROLL_NOTE, payrollReceived } from './payrollSplit';
 import type { PayrollTemplate } from './types';
 
 const template: PayrollTemplate = {
@@ -44,5 +44,19 @@ describe('defaultFundsMonth', () => {
 
   it('funds the same month otherwise', () => {
     expect(defaultFundsMonth('2026-11-28', false)).toBe('2026-11');
+  });
+});
+
+describe('payrollReceived', () => {
+  const payroll = { id: 'a', type: 'INCOME' as const, date: '2026-11-28', amountCents: 100000, note: PAYROLL_NOTE };
+
+  it('is true when a payroll was registered in that month', () => {
+    expect(payrollReceived([payroll], '2026-11')).toBe(true);
+  });
+
+  it('ignores payrolls from other months and incomes that are not a payroll', () => {
+    expect(payrollReceived([payroll], '2026-12')).toBe(false);
+    expect(payrollReceived([{ ...payroll, note: 'Venta' }], '2026-11')).toBe(false);
+    expect(payrollReceived([{ ...payroll, type: 'EXPENSE' as const }], '2026-11')).toBe(false);
   });
 });

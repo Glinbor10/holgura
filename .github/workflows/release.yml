@@ -91,6 +91,8 @@ jobs:
 
       - name: Check the APK has no network permission
         working-directory: ${{ github.workspace }}
+        env:
+          SIGNED: ${{ steps.signing.outputs.signed }}
         run: |
           APK=$(ls app/android/app/build/outputs/apk/*/*.apk | head -1)
           AAPT2=$(ls "$ANDROID_HOME"/build-tools/*/aapt2 | sort -V | tail -1)
@@ -100,7 +102,18 @@ jobs:
             echo "::error::The APK declares a network permission"
             exit 1
           fi
+          APKSIGNER=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
+          SHA=$("$APKSIGNER" verify --print-certs "$APK" | grep -m1 'SHA-256 digest' | sed 's/.*: //')
+          BT='`'
           {
+            echo "## Firma"
+            echo
+            if [ "$SIGNED" = "true" ]; then
+              echo "APK firmado con la clave de Holgura. Huella SHA-256 del certificado: ${BT}${SHA}${BT}"
+            else
+              echo "APK de depuración, firmado con una clave de prueba. Huella: ${BT}${SHA}${BT}"
+            fi
+            echo
             echo "## Privacidad"
             echo
             echo "Esta versión **no tiene permiso de internet ni de red**: no puede enviar datos a ningún sitio."

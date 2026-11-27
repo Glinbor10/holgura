@@ -29,7 +29,7 @@ La app **no tiene permiso de internet**: no puede enviar nada a ningún sitio.
 | | |
 |---|---|
 | 💶 **Te dice cuánto te queda** | El dinero disponible del mes y el ritmo diario, con una gráfica que recorres con el dedo. |
-| 🧾 **Registra tu nómina** | Cuando cobras, un toque. Eliges para qué mes es y se reparte sola entre tus destinos, por ejemplo 300 € a ahorro y el resto a gastos. |
+| 🧾 **Registra tu nómina** | Cuando cobras, un toque. Eliges para qué mes es y se aparta sola tu parte de ahorro, por ejemplo 300 €; el resto es para gastar. |
 | ⚡ **Apunta un gasto en segundos** | Teclado numérico propio y categorías con icono. |
 | 🔁 **Gastos fijos automáticos** | Alquiler, gimnasio o suscripciones se crean solos el día que elijas, y se pueden pausar. |
 | ✅ **Cierre de mes** | Si te sobra, decides si pasa a ahorro o se arrastra. Si te falta, decides si lo cubres con ahorro. |
@@ -52,7 +52,7 @@ La app **no tiene permiso de internet**: no puede enviar nada a ningún sitio.
   <img src="docs/screenshots/fijos-oscuro.png" width="220" alt="Gastos fijos con interruptor para pausarlos">
 </p>
 <p align="center">
-  <img src="docs/screenshots/ajustes-oscuro.png" width="220" alt="Ajustes: reparto de la nómina, destinos, categorías y copia de seguridad">
+  <img src="docs/screenshots/ajustes-oscuro.png" width="220" alt="Configuración: nómina, categorías, gastos fijos y copia de seguridad">
   <img src="docs/screenshots/inicio-claro.png" width="220" alt="Inicio en modo claro">
   <img src="docs/screenshots/nomina-claro.png" width="220" alt="Registro de la nómina en modo claro">
 </p>
@@ -83,8 +83,15 @@ Las copias de seguridad son cosa tuya: las exportas cuando quieres y las guardas
 1. Desde tu móvil, abre la [última versión](https://github.com/Glinbor10/holgura/releases/latest) y descarga el fichero `.apk` de la sección **Assets**.
 2. Ábrelo e instálalo. Android te pedirá permitir la instalación desde orígenes desconocidos.
 
+> [!NOTE]
+> **Aviso de Google Play Protect.** Android puede decir "Aplicación bloqueada para proteger tu dispositivo" o "Play Protect no conoce ninguna otra aplicación de este desarrollador". Es normal en cualquier app que no viene de la Play Store. Pulsa el texto pequeño **Instalar de todas formas** (no "Entendido", que cancela la instalación).
+>
+> Si quieres comprobar que el APK es el original, la huella SHA-256 de su firma es:
+> `93aa3a7aa18eccbde21e21d02ebc6f7a86f1184c52ac9986fafc859da6b7f6d0`
+> Se ve con `apksigner verify --print-certs holgura-vX.Y.Z.apk` y también está en las notas de cada release.
+
 > [!IMPORTANT]
-> **Antes de actualizar, exporta una copia de seguridad** desde Ajustes y guárdala fuera de la app (Drive, correo…). Android no guarda ninguna copia automática de Holgura: si desinstalas la app, esa copia es lo único que recupera tus datos.
+> **Antes de actualizar, exporta una copia de seguridad** desde Configuración y guárdala fuera de la app (Drive, correo…). Android no guarda ninguna copia automática de Holgura: si desinstalas la app, esa copia es lo único que recupera tus datos.
 
 ## Estado
 

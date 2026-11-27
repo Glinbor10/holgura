@@ -11,17 +11,13 @@ import { parseBackup, serializeBackup } from '../data/backup';
 import { errorMessage } from '../data/errors';
 import {
   addCategory,
-  addDestination,
   archiveCategory,
-  archiveDestination,
   renameCategory,
-  renameDestination,
   setPayrollLine,
   setPayrollTemplate,
 } from '../data/mutations';
 import { mutate, replaceData } from '../data/store';
-import { destinationBalance } from '../domain/balances';
-import { centsToInput, formatEuros, parseEuros } from '../domain/money';
+import { centsToInput, parseEuros } from '../domain/money';
 import type { Cents, PayrollTemplate } from '../domain/types';
 import { useRootData } from './root';
 import { CategoryBadge } from './shared';
@@ -32,13 +28,7 @@ export const settingsAction = async ({ request }: ActionFunctionArgs) => {
   const id = String(form.get('id'));
   const name = String(form.get('name') ?? '').trim();
   try {
-    if (intent === 'destination-add' && name) {
-      await mutate((data) => addDestination(data, { name, kind: 'SAVINGS' }));
-    } else if (intent === 'destination-rename' && name) {
-      await mutate((data) => renameDestination(data, id, name));
-    } else if (intent === 'destination-archive') {
-      await mutate((data) => archiveDestination(data, id));
-    } else if (intent === 'category-add' && name) {
+    if (intent === 'category-add' && name) {
       await mutate((data) => addCategory(data, name));
     } else if (intent === 'category-rename' && name) {
       await mutate((data) => renameCategory(data, id, name));
@@ -121,7 +111,7 @@ export const SettingsScreen = () => {
   const fetcher = useFetcher<{ error?: string }>();
   const revalidator = useRevalidator();
   const [backupMessage, setBackupMessage] = useState<{ severity: 'success' | 'error'; text: string } | null>(null);
-  const destinations = data.destinations.filter((destination) => !destination.archived);
+  const savingsId = data.destinations.find((destination) => destination.kind === 'SAVINGS' && !destination.archived)?.id;
   const categories = data.categories.filter((category) => !category.archived);
 
   const submit = (values: Record<string, string>) => fetcher.submit(values, { method: 'post' });
@@ -173,7 +163,7 @@ export const SettingsScreen = () => {
 
   return (
     <Stack spacing={3.5}>
-      <Typography variant="h5">Ajustes</Typography>
+      <Typography variant="h5">Configuración</Typography>
       {fetcher.data?.error ? <Alert severity="error">{fetcher.data.error}</Alert> : null}
 
       <Group>
@@ -183,7 +173,7 @@ export const SettingsScreen = () => {
 
       <Box>
         <Typography variant="h6">Tu nómina</Typography>
-        <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>Se usa al pulsar "Ha llegado la nómina".</Typography>
+        <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>Se usa al pulsar "Ha llegado la nómina" en Inicio.</Typography>
         <Group>
           <GroupRow>
             <Typography sx={{ flex: 1, fontWeight: 700 }}>Importe habitual</Typography>
@@ -195,6 +185,23 @@ export const SettingsScreen = () => {
               onCommit={(amount) => submit({ intent: 'payroll-amount', amount })}
             />
           </GroupRow>
+          {savingsId === undefined ? null : (
+            <GroupRow>
+              <Box sx={{ flex: 1 }}>
+                <Typography sx={{ fontWeight: 700 }}>Apartar para ahorro</Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  De cada nómina. El resto es para gastar.
+                </Typography>
+              </Box>
+              <AmountField
+                key={payrollLineCents(data.payrollTemplate, savingsId)}
+                label="Cuánto ahorrar de cada nómina"
+                cents={payrollLineCents(data.payrollTemplate, savingsId)}
+                placeholder="0"
+                onCommit={(amount) => submit({ intent: 'destination-payroll', id: savingsId, amount })}
+              />
+            </GroupRow>
+          )}
           <GroupRow>
             <Box sx={{ flex: 1 }}>
               <Typography sx={{ fontWeight: 700 }}>Financia el mes siguiente</Typography>
@@ -208,54 +215,6 @@ export const SettingsScreen = () => {
               slotProps={{ input: { 'aria-label': 'Financia el mes siguiente' } }}
             />
           </GroupRow>
-        </Group>
-      </Box>
-
-      <Box>
-        <Typography variant="h6">Destinos</Typography>
-        <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>
-          Dónde está tu dinero. Pon cuánto va a cada uno de cada nómina: Gastos recibe el resto.
-        </Typography>
-        <Group>
-          {destinations.map((destination) => (
-            <GroupRow key={`${destination.id}-${destination.name}`}>
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <NameInput
-                  value={destination.name}
-                  label={`Nombre del destino ${destination.name}`}
-                  onCommit={(name) => submit({ intent: 'destination-rename', id: destination.id, name })}
-                />
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                  {destination.kind === 'SPENDING' ? 'Para gastar' : 'Ahorro'}, {formatEuros(destinationBalance(destination, data.transactions))}
-                </Typography>
-              </Box>
-              {destination.kind === 'SPENDING' ? (
-                <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 700 }}>
-                  Recibe el resto
-                </Typography>
-              ) : (
-                <>
-                  <AmountField
-                    key={`${destination.id}-${payrollLineCents(data.payrollTemplate, destination.id)}`}
-                    label={`Cuánto va a ${destination.name} de cada nómina`}
-                    cents={payrollLineCents(data.payrollTemplate, destination.id)}
-                    placeholder="0"
-                    onCommit={(amount) => submit({ intent: 'destination-payroll', id: destination.id, amount })}
-                  />
-                  <IconButton aria-label={`Archivar ${destination.name}`} size="small" onClick={() => confirmArchive('destination-archive', destination.id, destination.name)}>
-                    <ArchiveOutlinedIcon fontSize="small" />
-                  </IconButton>
-                </>
-              )}
-            </GroupRow>
-          ))}
-          <fetcher.Form method="post" key={destinations.length}>
-            <GroupRow>
-              <input type="hidden" name="intent" value="destination-add" />
-              <TextField name="name" variant="standard" fullWidth placeholder="Nuevo destino de ahorro" slotProps={{ input: { disableUnderline: true } }} />
-              <Button type="submit">Añadir</Button>
-            </GroupRow>
-          </fetcher.Form>
         </Group>
       </Box>
 
@@ -292,7 +251,7 @@ export const SettingsScreen = () => {
       <Box>
         <Typography variant="h6">Copia de seguridad</Typography>
         <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>
-          Tus datos solo están en este móvil. Última copia: {data.lastExportAt ?? 'nunca'}. Guárdala en Drive, en el correo o donde quieras.
+          Tus datos están solo dentro de esta app: si la desinstalas o borras sus datos, se pierden. Última copia: {data.lastExportAt ?? 'nunca'}. Guárdala en Drive, en el correo o donde quieras.
         </Typography>
         {backupMessage ? (
           <Alert severity={backupMessage.severity} sx={{ mb: 1.5 }}>

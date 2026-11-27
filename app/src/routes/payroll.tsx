@@ -8,12 +8,10 @@ import { addIncome } from '../data/mutations';
 import { mutate } from '../data/store';
 import { monthOf, nextMonth, todayIso } from '../domain/dates';
 import { centsToInput, formatEuros, parseEuros } from '../domain/money';
-import { applyTemplate, defaultFundsMonth } from '../domain/payrollSplit';
+import { PAYROLL_NOTE, applyTemplate, defaultFundsMonth } from '../domain/payrollSplit';
 import { INSET_BOTTOM, INSET_TOP } from '../insets';
 import { useRootData } from './root';
 import { monthLabel } from './shared';
-
-const PAYROLL_NOTE = 'Nómina';
 
 export const payrollAction = async ({ request }: ActionFunctionArgs) => {
   const form = await request.formData();
@@ -83,7 +81,7 @@ export const PayrollScreen = () => {
         {split.ok ? (
           amount === null ? null : (
             <Box>
-              <Typography sx={{ fontWeight: 800, mb: 0.5 }}>Reparto</Typography>
+              <Typography sx={{ fontWeight: 800, mb: 0.5 }}>Así se reparte</Typography>
               {split.allocations.map((allocation) => (
                 <Stack key={allocation.destinationId} direction="row" sx={{ justifyContent: 'space-between', py: 0.25 }}>
                   <Typography sx={{ color: 'text.secondary' }}>{nameOf(allocation.destinationId)}</Typography>
@@ -91,12 +89,12 @@ export const PayrollScreen = () => {
                 </Stack>
               ))}
               <Button component={Link} to="/settings" size="small" sx={{ mt: 0.5, ml: -1 }}>
-                Cambiar en Ajustes
+                Cambiar en Configuración
               </Button>
             </Box>
           )
         ) : (
-          <Alert severity="warning" action={<Button component={Link} to="/settings" color="inherit">Ajustes</Button>}>
+          <Alert severity="warning" action={<Button component={Link} to="/settings" color="inherit">Configuración</Button>}>
             Lo que va a cada destino supera esta nómina.
           </Alert>
         )}
