@@ -13,7 +13,7 @@ La clave de firma existe, está fuera del repo y sus 4 secretos están subidos. 
 **Hecho:** especificación, diseño y tareas (`openspec/`); lógica del dinero con tests; 8 pantallas en claro y
 oscuro más la pantalla de nómina (`/payroll`, "Ha llegado la nómina", con importe prellenado desde Ajustes y
 pregunta de para qué mes es); teclado numérico propio; márgenes de la barra de estado con `--safe-area-inset-*`;
-logo nuevo (anillo con hueco y punto ámbar, fuentes en `app/assets/`).
+logo: escudo partido en azul y dorado por un `$` cuyos picos cortan el escudo (fuentes en `app/assets/`).
 
 **Sigue sin verificar en un móvil real:** SQLite en el teléfono, exportar/compartir e importar copias, que la app
 arranque sin el permiso `INTERNET`, y los márgenes de la barra de estado y el teclado de la v0.1.1.
@@ -35,6 +35,8 @@ arranque sin el permiso `INTERNET`, y los márgenes de la barra de estado y el t
   dentro, al final. El `+` abre un menú animado con Gasto (borde rojo) e Ingreso (borde verde); la pantalla de añadir
   recibe el tipo por la URL (`?kind=`) y no tiene selector. El ahorro es una tarjeta en Inicio; Gastos fijos y Cierre
   de mes viven en Configuración.
+- Colores con significado: **dorado** = ahorro (tarjeta Ahorrado, chip, histórico; es `secondary` del tema), **azul-violeta** =
+  dinero disponible e interfaz, **verde** = ingreso, **rojo** = gasto (menú del `+`, gráficas de fondo y sus símbolos).
 - El aviso de copia solo sale si pasan más de 30 días sin exportar (o desde el primer movimiento).
 - Tras la v0.1, lo primero es importar el CSV del banco; la versión web para iPhone viene después del APK.
 

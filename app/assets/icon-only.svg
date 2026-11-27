@@ -1,11 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108" width="1024" height="1024">
   <rect width="108" height="108" fill="#14142B"/>
   <defs>
-    <linearGradient id="g" x1="30" y1="76" x2="78" y2="32" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#4C66FF"/>
-      <stop offset="1" stop-color="#A692FF"/>
-    </linearGradient>
+    <linearGradient id="b" x1="22" y1="90" x2="54" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#3B55F0"/><stop offset="1" stop-color="#A08BFF"/></linearGradient>
+    <linearGradient id="a" x1="54" y1="90" x2="86" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#E5922A"/><stop offset="1" stop-color="#FFD27A"/></linearGradient>
+    <clipPath id="c"><path d="M54 20L86 32V54C86 72 72 84 54 90C36 84 22 72 22 54V32Z"/></clipPath>
   </defs>
-  <path d="M73.70 50.53 A20 20 0 1 1 57.47 34.30" fill="none" stroke="url(#g)" stroke-width="9" stroke-linecap="round"/>
-  <circle cx="68.14" cy="39.86" r="4.5" fill="#F5B14A"/>
+  <g clip-path="url(#c)">
+    <rect width="108" height="108" fill="url(#a)"/>
+    <path d="M0 0H54V31A12 12 0 0 0 54 55A12 12 0 0 1 54 79V120H0Z" fill="url(#b)"/>
+    <path d="M54 20V31A12 12 0 0 0 54 55A12 12 0 0 1 54 79V90" fill="none" stroke="#14142B" stroke-width="6" stroke-linecap="butt" stroke-linejoin="round"/>
+    <path d="M54 14V96" fill="none" stroke="#14142B" stroke-width="6" stroke-linecap="butt" stroke-linejoin="round"/>
+  </g>
+  <path d="M65.54 39.69A12 12 0 1 0 54 55A12 12 0 1 1 42.46 63.69" fill="none" stroke="#14142B" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

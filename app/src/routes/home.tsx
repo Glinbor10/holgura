@@ -62,7 +62,11 @@ export const HomeScreen = () => {
           <Chip label={left > 0 ? `${formatEuros(pace)} al día, ${daysLeft} ${daysLeft === 1 ? 'día' : 'días'}` : 'Presupuesto agotado'} />
           <Chip
             label={`${savedThisMonth >= 0 ? '+' : ''}${formatEuros(savedThisMonth)} ahorrados`}
-            sx={{ color: 'info.main', bgcolor: 'color-mix(in srgb, var(--mui-palette-info-main) 16%, transparent)' }}
+            sx={(theme) => ({
+              color: 'secondary.main',
+              bgcolor: 'color-mix(in srgb, var(--mui-palette-secondary-main) 16%, transparent)',
+              ...theme.applyStyles('light', { color: theme.palette.secondary.dark }),
+            })}
           />
         </Stack>
         {payrollPending ? (
@@ -92,9 +96,9 @@ export const HomeScreen = () => {
             justifyContent: 'space-between',
             p: 2.5,
             borderRadius: '24px',
-            color: '#fff',
+            color: '#14142B',
             textDecoration: 'none',
-            background: 'linear-gradient(135deg, #0E9F6E 0%, #0A6E8A 100%)',
+            background: 'linear-gradient(135deg, #FFD27A 0%, #F5B14A 55%, #E5922A 100%)',
           }}
         >
           <Box>

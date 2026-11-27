@@ -56,10 +56,15 @@ export const shortMonth = (month: Month): string =>
 export const longDay = (date: IsoDate): string =>
   new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long' }).format(toDate(date));
 
-export const AmountText = ({ cents, plus = false }: { cents: number; plus?: boolean }) => (
+/** Positive amounts are green (income) or gold (savings). */
+export const AmountText = ({ cents, plus = false, positive = 'income' }: { cents: number; plus?: boolean; positive?: 'income' | 'savings' }) => (
   <Typography
     component="span"
-    sx={{ fontWeight: 800, color: cents < 0 ? 'text.primary' : plus && cents > 0 ? 'success.main' : 'text.primary' }}
+    sx={(theme) => ({
+      fontWeight: 800,
+      color: cents < 0 ? 'text.primary' : plus && cents > 0 ? (positive === 'savings' ? 'secondary.main' : 'success.main') : 'text.primary',
+      ...(positive === 'savings' && plus && cents > 0 ? theme.applyStyles('light', { color: theme.palette.secondary.dark }) : {}),
+    })}
   >
     {plus && cents > 0 ? '+' : ''}
     {formatEuros(cents)}
