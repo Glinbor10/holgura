@@ -103,6 +103,7 @@ const payrollLineCents = (template: PayrollTemplate, destinationId: string): Cen
 
 const AmountField = ({ cents, label, placeholder, onCommit }: { cents: Cents; label: string; placeholder: string; onCommit: (amount: string) => void }) => (
   <TextField
+    hiddenLabel
     size="small"
     placeholder={placeholder}
     defaultValue={centsToInput(cents)}

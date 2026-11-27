@@ -116,7 +116,7 @@ export const CloseScreen = () => {
           <input type="hidden" name="intent" value="reopen" />
           <input type="hidden" name="month" value={lastClosed} />
           <Stack spacing={0.5} sx={{ alignItems: 'flex-start' }}>
-            <Button type="submit" color="warning">
+            <Button type="submit" variant="outlined" color="warning">
               Reabrir {monthName(lastClosed)}
             </Button>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
