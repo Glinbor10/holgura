@@ -36,7 +36,7 @@ Orden TDD: primero el test que falla, luego el mínimo código. `[x]` = hecha.
 - [x] 5.4 Permiso `INTERNET` quitado del manifiesto (ninguna librería lo declara). **Verificar en el móvil que la app arranca**; si no, volver a ponerlo. `allowBackup` desactivado (27/11/2026): Android no copia los datos a ningún sitio; las copias son solo las que exporta el usuario. Las librerías añaden `USE_BIOMETRIC`/`USE_FINGERPRINT`, que la app no usa.
 - [x] 5.5 Nombre **Holgura**, id `app.holgura` (el `namespace` Java sigue siendo `com.savingstracker.app`; el id y el namespace pueden diferir)
 - [x] 5.6 Firma: el workflow firma con secretos de GitHub si existen (`docs/SIGNING.md`) y sube el `versionCode` con el número de ejecución. Clave creada y 4 secretos subidos; la `v0.1.0` salió firmada.
-- [x] 5.7 Licencia PolyForm Noncommercial 1.0.0 (`LICENSE`), con `Required Notice` rellena en el README.
+- [x] 5.7 Licencia PolyForm Noncommercial 1.0.0 (`LICENSE.md`), con `Required Notice` rellena en el README.
 - [x] 4.9 Pantallas Fijos, Cierre de mes, Ajustes y Editar rediseñadas al estilo del resto; flujo de cierre de mes recorrido en el navegador (cerrar, ver ahorro) y correcto
 - [ ] 5.2 Probar el APK en un móvil real (el APK sale del workflow `Release`; la v0.1.0 está firmada)
 
