@@ -1,18 +1,23 @@
-name: Build APK
+﻿name: Build APK
 
-# Builds the Android APK and uploads it as a downloadable artifact.
+# Builds the Android APK only when a GitHub Release is published (or manually),
+# and attaches it to that release.
 # - With the signing secrets configured (see docs/SIGNING.md) it builds a SIGNED release APK
-#   that can be installed over the previous version without losing data.
-# - Without them (for example in a fork) it builds an unsigned-key debug APK.
-# Secrets are only available on pushes to main, never to pull requests from forks.
+#   that installs over the previous version without losing data.
+# - Without them (for example in a fork) it builds a debug APK.
+# Pull requests are already checked by ci.yml, so this does not run on every push.
 on:
+  release:
+    types: [published]
   workflow_dispatch:
-  push:
-    branches: [main]
+
+permissions:
+  contents: write
 
 jobs:
   apk:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: app
@@ -29,6 +34,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+          cache: gradle
 
       - run: npm ci
       - run: npm test
@@ -64,7 +70,19 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
 
+      - name: Rename APK
+        run: |
+          mkdir -p "$RUNNER_TEMP/out"
+          cp app/android/app/build/outputs/apk/*/*.apk "$RUNNER_TEMP/out/holgura-${{ github.event.release.tag_name || github.run_number }}.apk"
+        working-directory: ${{ github.workspace }}
+
       - uses: actions/upload-artifact@v4
         with:
           name: holgura-apk
-          path: app/android/app/build/outputs/apk/*/*.apk
+          path: ${{ runner.temp }}/out/*.apk
+
+      - name: Attach APK to the release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" "$RUNNER_TEMP"/out/*.apk --clobber
