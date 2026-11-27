@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Holgura</string>
+    <string name="title_activity_main">Holgura</string>
+    <string name="package_name">app.holgura</string>
+    <string name="custom_url_scheme">app.holgura</string>
+</resources>
