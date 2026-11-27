@@ -1,6 +1,5 @@
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import PaymentsIcon from '@mui/icons-material/Payments';
 import RepeatIcon from '@mui/icons-material/Repeat';
 import { Alert, Box, Button, Chip, Stack, Typography } from '@mui/material';
 import { useState, type ReactElement } from 'react';
@@ -21,7 +20,6 @@ import { CategoryBadge, Ledger, categoryName, categoryStyle, monthLabel } from '
 const QUICK_ACTIONS: { to: string; label: string; icon: ReactElement }[] = [
   { to: '/add?kind=expense', label: 'Gasto', icon: <ArrowUpwardIcon /> },
   { to: '/add?kind=income', label: 'Ingreso', icon: <ArrowDownwardIcon /> },
-  { to: '/add?kind=payroll', label: 'Nómina', icon: <PaymentsIcon /> },
   { to: '/recurring', label: 'Fijos', icon: <RepeatIcon /> },
 ];
 
@@ -172,8 +170,8 @@ export const HomeScreen = () => {
             <Typography sx={{ color: 'text.secondary' }}>
               Todavía no hay movimientos. Apunta tu nómina para ver cuánto puedes gastar cada día.
             </Typography>
-            <Button component={Link} to="/add?kind=payroll" variant="contained">
-              Apuntar mi nómina
+            <Button component={Link} to="/payroll" variant="contained">
+              Ha llegado la nómina
             </Button>
           </Stack>
         ) : (

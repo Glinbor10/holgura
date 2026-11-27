@@ -68,6 +68,8 @@ export interface RecurringExpense {
 }
 
 export interface PayrollTemplate {
+  /** Usual net payroll, to prefill the "payroll arrived" screen. Optional. */
+  amountCents?: Cents;
   /** Fixed lines; whatever is left goes to `remainderDestinationId`. */
   lines: Allocation[];
   remainderDestinationId: string;
