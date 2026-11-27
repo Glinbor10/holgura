@@ -49,7 +49,6 @@ const DockTab = ({ tab, active }: { tab: Tab; active: boolean }) => (
   <Box
     component={Link}
     to={tab.path}
-    viewTransition
     aria-current={active ? 'page' : undefined}
     sx={{
       display: 'flex',
@@ -57,7 +56,10 @@ const DockTab = ({ tab, active }: { tab: Tab; active: boolean }) => (
       alignItems: 'center',
       justifyContent: 'center',
       gap: 0.25,
+      position: 'relative',
+      zIndex: 1,
       color: active ? 'primary.main' : 'text.secondary',
+      transition: 'color 260ms',
       textDecoration: 'none',
       '& svg': { fontSize: 26, transition: 'transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1)', transform: active ? 'translateY(-1px) scale(1.08)' : 'none' },
     }}
@@ -72,6 +74,7 @@ const DockTab = ({ tab, active }: { tab: Tab; active: boolean }) => (
 export const Layout = () => {
   const { pathname } = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const activeIndex = TABS.findIndex((tab) => pathname === tab.path || (tab.also ?? []).includes(pathname));
   const hideDock = pathname === '/add' || pathname === '/payroll' || pathname.startsWith('/edit/');
   return (
     <Box sx={{ minHeight: '100dvh', pb: hideDock ? 0 : `calc(120px + ${INSET_BOTTOM})`, pt: INSET_TOP }}>
@@ -104,9 +107,25 @@ export const Layout = () => {
             boxShadow: '0 12px 32px rgba(0, 0, 0, 0.28)',
           }}
         >
-          <Box sx={{ flex: 1, height: '100%', display: 'grid', gridTemplateColumns: `repeat(${TABS.length}, 1fr)`, alignItems: 'stretch' }}>
-            {TABS.map((tab) => (
-              <DockTab key={tab.path} tab={tab} active={pathname === tab.path || (tab.also ?? []).includes(pathname)} />
+          <Box sx={{ position: 'relative', flex: 1, height: '100%', display: 'grid', gridTemplateColumns: `repeat(${TABS.length}, 1fr)`, alignItems: 'stretch' }}>
+            <Box
+              aria-hidden
+              sx={{
+                position: 'absolute',
+                top: 8,
+                bottom: 8,
+                left: 0,
+                width: `${100 / TABS.length}%`,
+                px: 0.5,
+                opacity: activeIndex < 0 ? 0 : 1,
+                transform: `translateX(${Math.max(activeIndex, 0) * 100}%)`,
+                transition: 'transform 420ms cubic-bezier(0.34, 1.3, 0.5, 1), opacity 200ms',
+              }}
+            >
+              <Box sx={{ height: '100%', borderRadius: '26px', bgcolor: 'color-mix(in srgb, var(--mui-palette-primary-main) 16%, transparent)' }} />
+            </Box>
+            {TABS.map((tab, index) => (
+              <DockTab key={tab.path} tab={tab} active={index === activeIndex} />
             ))}
           </Box>
           <ButtonBase
@@ -127,7 +146,7 @@ export const Layout = () => {
           </ButtonBase>
         </Box>
       )}
-      <Backdrop open={menuOpen && !hideDock} onClick={() => setMenuOpen(false)} sx={{ zIndex: 1100, bgcolor: 'rgba(0, 0, 0, 0.45)' }} />
+      <Backdrop open={menuOpen && !hideDock} onClick={() => setMenuOpen(false)} sx={{ zIndex: 1100, bgcolor: 'rgba(0, 0, 0, 0.3)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }} />
       <Box
         sx={{
           position: 'fixed',

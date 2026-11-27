@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Form, Link, redirect, useActionData, useSearchParams, type ActionFunctionArgs } from 'react-router-dom';
 import { AmountDisplay, Keypad } from '../components/AmountPad';
 import { CategoryPicker } from '../components/CategoryPicker';
+import { TrendBackdrop } from '../components/TrendBackdrop';
 import { errorMessage } from '../data/errors';
 import { addExpense, addIncome } from '../data/mutations';
 import { mutate } from '../data/store';
@@ -56,8 +57,10 @@ export const AddScreen = () => {
   const submitLabel = amount === null ? 'Escribe un importe' : `Guardar ${formatEuros(amount)}`;
 
   return (
-    <Form method="post">
-      <Stack spacing={2.5} sx={{ minHeight: `calc(100dvh - 32px - ${INSET_TOP})` }}>
+    <Box sx={{ position: 'relative' }}>
+      <TrendBackdrop kind={kind} />
+      <Form method="post">
+      <Stack spacing={2.5} sx={{ position: 'relative', minHeight: `calc(100dvh - 32px - ${INSET_TOP})` }}>
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5 }}>
           <Typography variant="h5" sx={{ flex: 1, fontWeight: 800 }}>
             {kind === 'expense' ? 'Nuevo gasto' : 'Nuevo ingreso'}
@@ -112,6 +115,7 @@ export const AddScreen = () => {
           </Button>
         </Box>
       </Stack>
-    </Form>
+      </Form>
+    </Box>
   );
 };
