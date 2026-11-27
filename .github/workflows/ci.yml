@@ -1,13 +1,9 @@
 name: CI
 
-# Fast checks on every pull request: types, tests and a production build.
+# Fast checks on every pull request (no path filters: main requires this check, so it must always run): types, tests and a production build.
 # Uses no secrets, so it is safe on pull requests from forks.
 on:
   pull_request:
-    paths-ignore:
-      - "docs/**"
-      - "openspec/**"
-      - "**/*.md"
 
 concurrency:
   group: ci-${{ github.ref }}
