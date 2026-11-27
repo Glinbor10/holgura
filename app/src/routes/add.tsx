@@ -1,6 +1,6 @@
 import CloseIcon from '@mui/icons-material/Close';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Alert, Box, Button, Collapse, IconButton, Stack, TextField, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Alert, Box, Button, Collapse, IconButton, Stack, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import { Form, Link, redirect, useActionData, useSearchParams, type ActionFunctionArgs } from 'react-router-dom';
 import { AmountDisplay, Keypad } from '../components/AmountPad';
@@ -46,7 +46,7 @@ export const AddScreen = () => {
   const spendingId = data.destinations.find((destination) => destination.kind === 'SPENDING')?.id ?? '';
   const categories = data.categories.filter((category) => !category.archived);
   const initialKind = params.get('kind');
-  const [kind, setKind] = useState<Kind>(isKind(initialKind) ? initialKind : 'expense');
+  const kind: Kind = isKind(initialKind) ? initialKind : 'expense';
   const [amountText, setAmountText] = useState('');
   const [categoryId, setCategoryId] = useState(categories[0]?.id ?? '');
   const [showDetails, setShowDetails] = useState(false);
@@ -59,16 +59,9 @@ export const AddScreen = () => {
     <Form method="post">
       <Stack spacing={2.5} sx={{ minHeight: `calc(100dvh - 32px - ${INSET_TOP})` }}>
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5 }}>
-          <ToggleButtonGroup
-            exclusive
-            fullWidth
-            value={kind}
-            onChange={(_event, value: Kind | null) => setKind(value ?? kind)}
-            sx={{ flex: 1, '& .MuiToggleButtonGroup-grouped': { borderRadius: '999px !important', marginLeft: '0 !important', border: 0 } }}
-          >
-            <ToggleButton value="expense">Gasto</ToggleButton>
-            <ToggleButton value="income">Ingreso</ToggleButton>
-          </ToggleButtonGroup>
+          <Typography variant="h5" sx={{ flex: 1, fontWeight: 800 }}>
+            {kind === 'expense' ? 'Nuevo gasto' : 'Nuevo ingreso'}
+          </Typography>
           <IconButton component={Link} to="/" viewTransition aria-label="Cerrar sin guardar">
             <CloseIcon />
           </IconButton>
