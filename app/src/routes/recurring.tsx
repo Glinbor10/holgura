@@ -73,10 +73,12 @@ export const RecurringScreen = () => {
                   {item.name}
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                  Día {item.dayOfMonth} de cada mes
+                  <Box component="span" sx={{ fontWeight: 800, color: 'text.primary' }}>
+                    {formatEuros(item.amountCents)}
+                  </Box>
+                  {` · día ${item.dayOfMonth}`}
                 </Typography>
               </Box>
-              <Typography sx={{ fontWeight: 800, opacity: item.active ? 1 : 0.55 }}>{formatEuros(item.amountCents)}</Typography>
               <Switch
                 checked={item.active}
                 onChange={(event) => fetcher.submit({ intent: 'toggle', id: item.id, active: String(event.target.checked) }, { method: 'post' })}
