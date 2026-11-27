@@ -24,6 +24,8 @@ export const CategoryPicker = ({ categories, value, onChange }: CategoryPickerPr
           py: 1,
           borderRadius: '18px',
           outline: category.id === value ? '2px solid var(--mui-palette-primary-main)' : '2px solid transparent',
+          // Inside the box: the row scrolls (overflow-x auto), which would clip a ring drawn outside it.
+          outlineOffset: '-2px',
           bgcolor: category.id === value ? 'action.hover' : 'transparent',
         }}
       >
