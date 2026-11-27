@@ -1,0 +1,46 @@
+# Tareas: v0.1 MVP
+
+Orden TDD: primero el test que falla, luego el mínimo código. `[x]` = hecha.
+
+## 1. Proyecto
+- [x] 1.1 Scaffold Vite + React + TypeScript + Vitest (`savings-tracker/app`)
+- [x] 1.2 Dependencias: MUI, React Router, Capacitor, plugin SQLite
+
+## 2. Dominio puro (`src/domain`) — TDD
+- [x] 2.1 `money`: formato EUR y parseo de importes a céntimos
+- [x] 2.2 `dates`: helpers de mes (`YYYY-MM`), último día, día 31 en meses cortos
+- [x] 2.3 `balances`: saldo de destino, `allowance`, `available`
+- [x] 2.4 `payrollSplit`: aplicar plantilla, error si líneas fijas > nómina
+- [x] 2.5 `recurring`: qué gastos generar hasta hoy (meses saltados, día 31)
+- [x] 2.6 `closing`: opciones de sobrante/déficit, arrastre, reabrir último
+- [x] 2.7 `savings`: ahorro del mes y acumulado
+
+## 3. Datos (`src/data`)
+- [x] 3.1 Interfaz `Repository` + `localStorageRepository` (web); sin `memoryRepository`: no hacía falta, la lógica se testea con funciones puras
+- [x] 3.2 `sqliteRepository` (documento JSON en una fila); sin migraciones de esquema todavía (v1)
+- [x] 3.3 `backup`: exportar, validar, importar atómico (test: corrupto / versión futura)
+
+## 4. UI (`src/routes`)
+- [x] 4.1 Layout, tema MUI y navegación inferior
+- [x] 4.2 Inicio (available, ahorro, últimos movimientos, avisos)
+- [x] 4.3 Añadir movimiento (gasto rápido / ingreso / nómina con reparto)
+- [x] 4.4 Movimientos (listado, editar, borrar, mes cerrado)
+- [x] 4.5 Fijos (CRUD)
+- [x] 4.6 Cierre de mes
+- [x] 4.7 Histórico
+- [x] 4.8 Ajustes: destinos, categorías, plantilla de nómina, exportar/importar
+
+## 5. Android
+- [x] 5.1 Configuración de Capacitor y plataforma android
+- [x] 5.3 Detalles Android: botón "atrás" (sale solo desde Inicio), icono adaptable propio, arranque a juego, `SystemBars` con márgenes `css`, pantalla de error en vez de pantalla en blanco
+- [x] 5.4 Permiso `INTERNET` quitado del manifiesto (ninguna librería lo declara). **Verificar en el móvil que la app arranca**; si no, volver a ponerlo. `allowBackup` se deja activo: "solo en el móvil" significa que la app no usa servidores, las copias son otra cosa.
+- [x] 5.5 Nombre **Holgura**, id `app.holgura` (el `namespace` Java sigue siendo `com.savingstracker.app`; el id y el namespace pueden diferir)
+- [x] 5.6 Firma: el workflow firma con secretos de GitHub si existen (`docs/SIGNING.md`) y sube el `versionCode` con el número de ejecución. **Pendiente de hacer por el titular: crear la clave y subir los 4 secretos**
+- [x] 5.7 Licencia PolyForm Noncommercial 1.0.0 (`LICENSE`). **Pendiente: rellenar la línea `Required Notice` del README con el titular**
+- [x] 4.9 Pantallas Fijos, Cierre de mes, Ajustes y Editar rediseñadas al estilo del resto; flujo de cierre de mes recorrido en el navegador (cerrar, ver ahorro) y correcto
+- [ ] 5.2 Generar y probar el APK en un móvil real (requiere Android Studio; instrucciones en app/README.md)
+
+## 6. Cierre
+- [x] 6.1 Todos los tests en verde, build de producción OK
+- [x] 6.2 README (inglés) y verificación de escenarios de la spec
+- [ ] 6.3 Probar SQLite y exportar/importar en un dispositivo Android (solo verificado en navegador)

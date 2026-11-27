@@ -1,0 +1,15 @@
+# Dependencies and build output
+node_modules/
+dist/
+build/
+.gradle/
+
+# Android signing: never commit these
+*.jks
+*.keystore
+keystore.properties
+
+# Local tooling
+.playwright-mcp/
+.claude/settings.local.json
+.DS_Store

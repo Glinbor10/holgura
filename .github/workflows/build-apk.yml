@@ -1,0 +1,70 @@
+name: Build APK
+
+# Builds the Android APK and uploads it as a downloadable artifact.
+# - With the signing secrets configured (see docs/SIGNING.md) it builds a SIGNED release APK
+#   that can be installed over the previous version without losing data.
+# - Without them (for example in a fork) it builds an unsigned-key debug APK.
+# Secrets are only available on pushes to main, never to pull requests from forks.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: npx cap sync android
+
+      - name: Decode signing key
+        id: signing
+        env:
+          KEYSTORE_BASE64: ${{ secrets.HOLGURA_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/holgura.jks"
+            echo "signed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build signed release APK
+        if: steps.signing.outputs.signed == 'true'
+        working-directory: app/android
+        env:
+          HOLGURA_KEYSTORE_PATH: ${{ runner.temp }}/holgura.jks
+          HOLGURA_KEYSTORE_PASSWORD: ${{ secrets.HOLGURA_KEYSTORE_PASSWORD }}
+          HOLGURA_KEY_ALIAS: ${{ secrets.HOLGURA_KEY_ALIAS }}
+          HOLGURA_KEY_PASSWORD: ${{ secrets.HOLGURA_KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease
+
+      - name: Build debug APK (no signing key available)
+        if: steps.signing.outputs.signed != 'true'
+        working-directory: app/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: holgura-apk
+          path: app/android/app/build/outputs/apk/*/*.apk
