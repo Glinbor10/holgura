@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="app/assets/icon-only.svg" width="96" alt="Logo de Holgura: un anillo con un hueco y un punto ámbar">
+
 # Holgura
 
 **Cuánto puedes gastar de verdad.**
