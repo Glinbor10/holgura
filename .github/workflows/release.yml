@@ -1,0 +1,108 @@
+﻿name: Release
+
+# Builds the Android APK and publishes a GitHub Release with it attached.
+# Two ways to start it:
+#   - Push a tag like v0.2.0:   git tag v0.2.0 && git push origin v0.2.0
+#   - Run it by hand (Actions > Release > Run workflow) and type the version, e.g. 0.2.0
+#     (the tag is created on main for you).
+# With the signing secrets (docs/SIGNING.md) the APK is SIGNED and installs over the previous
+# version without losing data. Without them it is a debug APK and the release is marked pre-release.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version without the v (for example 0.2.0)"
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      VERSION: ${{ inputs.version || github.ref_name }}
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Work out the version
+        run: |
+          V="${VERSION#v}"
+          echo "$V" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.]+)?$' || { echo "Invalid version: $V"; exit 1; }
+          echo "HOLGURA_VERSION=$V" >> "$GITHUB_ENV"
+          echo "TAG=v$V" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - run: npm ci
+      - run: npx tsc -b
+      - run: npm test
+      - run: npm run build
+      - run: npx cap sync android
+
+      - name: Decode signing key
+        id: signing
+        env:
+          KEYSTORE_BASE64: ${{ secrets.HOLGURA_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/holgura.jks"
+            echo "signed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build signed release APK
+        if: steps.signing.outputs.signed == 'true'
+        working-directory: app/android
+        env:
+          HOLGURA_KEYSTORE_PATH: ${{ runner.temp }}/holgura.jks
+          HOLGURA_KEYSTORE_PASSWORD: ${{ secrets.HOLGURA_KEYSTORE_PASSWORD }}
+          HOLGURA_KEY_ALIAS: ${{ secrets.HOLGURA_KEY_ALIAS }}
+          HOLGURA_KEY_PASSWORD: ${{ secrets.HOLGURA_KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease
+
+      - name: Build debug APK (no signing key available)
+        if: steps.signing.outputs.signed != 'true'
+        working-directory: app/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SIGNED: ${{ steps.signing.outputs.signed }}
+        working-directory: ${{ github.workspace }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/out"
+          cp app/android/app/build/outputs/apk/*/*.apk "$RUNNER_TEMP/out/holgura-$TAG.apk"
+          FLAGS=""
+          if [ "$SIGNED" != "true" ]; then FLAGS="--prerelease"; fi
+          gh release create "$TAG" "$RUNNER_TEMP/out/holgura-$TAG.apk" \
+            --target "$GITHUB_SHA" --title "Holgura $TAG" --generate-notes $FLAGS
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: holgura-apk
+          path: ${{ runner.temp }}/out/*.apk

@@ -1,5 +1,15 @@
 ﻿# Holgura
 
+[![CI](https://github.com/Glinbor10/holgura/actions/workflows/ci.yml/badge.svg)](https://github.com/Glinbor10/holgura/actions/workflows/ci.yml)
+[![Última versión](https://img.shields.io/github/v/release/Glinbor10/holgura?include_prereleases&label=versi%C3%B3n)](https://github.com/Glinbor10/holgura/releases/latest)
+[![Licencia](https://img.shields.io/badge/licencia-PolyForm%20Noncommercial-blue)](LICENSE)
+![Android](https://img.shields.io/badge/Android-app-3DDC84?logo=android&logoColor=white)
+![Sin conexión](https://img.shields.io/badge/datos-solo%20en%20tu%20m%C3%B3vil-informational)
+[![CI](https://github.com/Glinbor10/holgura/actions/workflows/ci.yml/badge.svg)](https://github.com/Glinbor10/holgura/actions/workflows/ci.yml)
+[![Última versión](https://img.shields.io/github/v/release/Glinbor10/holgura?include_prereleases&label=versi%C3%B3n)](https://github.com/Glinbor10/holgura/releases/latest)
+[![Licencia](https://img.shields.io/badge/licencia-PolyForm%20Noncommercial-blue)](LICENSE)
+![Android](https://img.shields.io/badge/Android-app-3DDC84?logo=android&logoColor=white)
+![Sin conexión](https://img.shields.io/badge/datos-solo%20en%20tu%20m%C3%B3vil-informational)
 **Cuánto puedes gastar de verdad.** Holgura es una app para Android que controla tu nómina, tus gastos fijos y variables y cuánto ahorras cada mes. Funciona sin conexión y tus datos no salen de tu móvil.
 
 <p align="center">
@@ -43,8 +53,8 @@ Las copias de seguridad son cosa tuya: las exportas cuando quieres y las guardas
 
 ## Instalar en Android
 
-1. Entra en la pestaña **Actions** de este repositorio, abre la última ejecución de **Build APK** y descarga el artefacto `holgura-apk`.
-2. Pasa `app-release.apk` a tu móvil e instálalo. Android te pedirá permitir la instalación desde orígenes desconocidos.
+1. Descarga el `.apk` de la [última versión](https://github.com/Glinbor10/holgura/releases/latest) (sección **Assets**) desde tu móvil.
+2. Ábrelo e instálalo. Android te pedirá permitir la instalación desde orígenes desconocidos.
 
 Para que las actualizaciones se instalen encima de la versión anterior sin perder datos, el APK tiene que firmarse siempre con la misma clave. Cómo crearla: [`docs/SIGNING.md`](docs/SIGNING.md).
 
@@ -84,7 +94,7 @@ Todas las reglas del dinero viven en `app/src/domain` como funciones puras, sin 
 | [`app/`](app/README.md) | Código de la app |
 | [`openspec/`](openspec/changes/v0-1-mvp/proposal.md) | Especificación del producto, diseño técnico y tareas |
 | [`docs/`](docs/SIGNING.md) | Cómo firmar el APK, capturas de pantalla |
-| `.github/workflows/` | Compilación del APK en GitHub Actions |
+| `.github/workflows/` | CI de las PR y publicación de versiones con su APK |
 
 ## Licencia
 
@@ -93,3 +103,10 @@ Todas las reglas del dinero viven en `app/src/domain` como funciones puras, sin 
 Es una licencia de código disponible, no una licencia open-source en el sentido estricto de la OSI, que no permite restringir el uso comercial.
 
 Required Notice: Copyright (c) 2026 Guillermo Linares Borrego
+
+## Publicar una versión
+
+```bash
+git tag v0.2.0 && git push origin v0.2.0
+```
+O desde **Actions > Release > Run workflow**. El workflow compila el APK y crea la release con él adjunto. Si no hay clave de firma configurada, la release sale marcada como pre-release con un APK de debug.

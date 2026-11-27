@@ -1,0 +1,24 @@
+﻿name: Error
+description: Algo no funciona como debería
+labels: [bug]
+body:
+  - type: textarea
+    id: que
+    attributes:
+      label: Qué ha pasado
+      description: Qué esperabas y qué ha ocurrido en realidad.
+    validations:
+      required: true
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Cómo reproducirlo
+      placeholder: "1. Abro Añadir\n2. ..."
+  - type: input
+    id: version
+    attributes:
+      label: Versión de Holgura y de Android
+      placeholder: "0.1.0, Android 15"
+  - type: markdown
+    attributes:
+      value: "No pegues copias de seguridad ni importes reales: contienen tus datos."
