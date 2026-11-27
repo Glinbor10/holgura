@@ -9,14 +9,11 @@
 App Android para controlar tu nómina, tus gastos y tu ahorro.<br>
 Sin conexión, sin cuentas y sin servidores: tus datos no salen de tu móvil.
 
-[![CI](https://github.com/Glinbor10/holgura/actions/workflows/ci.yml/badge.svg)](https://github.com/Glinbor10/holgura/actions/workflows/ci.yml)
-[![Versión](https://img.shields.io/github/v/release/Glinbor10/holgura?include_prereleases&label=versi%C3%B3n)](https://github.com/Glinbor10/holgura/releases)
-[![Licencia](https://img.shields.io/badge/licencia-PolyForm%20Noncommercial-blue)](LICENSE)
+[![Última versión](https://img.shields.io/github/v/release/Glinbor10/holgura?include_prereleases&label=versi%C3%B3n)](https://github.com/Glinbor10/holgura/releases/latest)
 ![Android](https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
-![Capacitor](https://img.shields.io/badge/Capacitor-119EFF?logo=capacitor&logoColor=white)
+[![Licencia](https://img.shields.io/badge/licencia-PolyForm%20Noncommercial-blue)](LICENSE)
 
-[**Descargar APK**](https://github.com/Glinbor10/holgura/releases) · [Cómo funciona](#cómo-piensa-el-dinero) · [Desarrollo](#desarrollo)
+[**⬇ Descargar la app (APK)**](https://github.com/Glinbor10/holgura/releases/latest)
 
 <br>
 
@@ -31,7 +28,7 @@ Sin conexión, sin cuentas y sin servidores: tus datos no salen de tu móvil.
 | | |
 |---|---|
 | 💶 **Te dice cuánto te queda** | El dinero disponible del mes y el ritmo diario, con una gráfica que recorres con el dedo. |
-| 🧾 **Reparte tu nómina** | Cuando cobras, la divides entre destinos: por ejemplo 300 € a ahorro y el resto a gastos. |
+| 🧾 **Registra tu nómina** | Cuando cobras, un toque. Eliges para qué mes es y se reparte sola entre tus destinos, por ejemplo 300 € a ahorro y el resto a gastos. |
 | ⚡ **Apunta un gasto en segundos** | Teclado numérico propio y categorías con icono. |
 | 🔁 **Gastos fijos automáticos** | Alquiler, gimnasio o suscripciones se crean solos el día que elijas, y se pueden pausar. |
 | ✅ **Cierre de mes** | Si te sobra, decides si pasa a ahorro o se arrastra. Si te falta, decides si lo cubres con ahorro. |
@@ -55,12 +52,12 @@ Sin conexión, sin cuentas y sin servidores: tus datos no salen de tu móvil.
 Holgura separa dos cosas: **dónde está** tu dinero y **para qué mes es**.
 
 - **Destinos:** son bolsillos con saldo (por ejemplo *Gastos* y *Ahorro*). Su saldo no se reinicia cada mes.
-- **Mes que financia:** cada ingreso dice qué mes cubre. Si cobras el día 28, esa nómina financia por defecto el mes siguiente, así el dinero de noviembre cuenta para diciembre y no descuadra el mes en curso.
+- **Mes que financia:** cada nómina dice qué mes cubre. Si cobras a final de mes, esa nómina financia el mes siguiente: lo que cobras hoy es lo que gastarás en diciembre.
 - **Lo que puedes gastar** es lo que financian tus ingresos ese mes, más lo que arrastras del anterior, menos lo ya gastado.
 
 ## Privacidad
 
-- Los datos se guardan solo en el móvil, en una base de datos local.
+- Los datos se guardan solo en tu móvil, en una base de datos local.
 - La app no pide ningún permiso de Android y no usa internet.
 - No hay cuentas, ni servidores, ni analíticas.
 
@@ -68,22 +65,15 @@ Las copias de seguridad son cosa tuya: las exportas cuando quieres y las guardas
 
 ## Instalar en Android
 
-1. Descarga el `.apk` de la [última versión](https://github.com/Glinbor10/holgura/releases) (sección **Assets**) desde tu móvil.
+1. Desde tu móvil, abre la [última versión](https://github.com/Glinbor10/holgura/releases/latest) y descarga el fichero `.apk` de la sección **Assets**.
 2. Ábrelo e instálalo. Android te pedirá permitir la instalación desde orígenes desconocidos.
 
 > [!IMPORTANT]
-> **Antes de actualizar, exporta una copia de seguridad** desde Ajustes. Si algún día hay que desinstalar la app, esa copia es lo único que recupera tus datos.
-
-> [!NOTE]
-> Para que una actualización se instale encima de la anterior sin perder datos, el APK tiene que estar firmado siempre con la misma clave ([`docs/SIGNING.md`](docs/SIGNING.md)). Las versiones marcadas como *pre-release* llevan un APK de debug, válido para probar pero no para uso diario.
+> **Antes de actualizar, exporta una copia de seguridad** desde Ajustes y guárdala fuera de la app (Drive, correo…). Si alguna vez tienes que desinstalar la app, esa copia es lo que recupera tus datos.
 
 ## Estado
 
-Versión **0.1, en pruebas**.
-
-- ✅ La lógica del dinero (reparto de nómina, cierre de mes, gastos fijos, ahorro) está cubierta por tests automáticos.
-- ✅ La interfaz está revisada en un navegador a tamaño de móvil, en claro y oscuro.
-- ⏳ Sin verificar todavía en un móvil real: el guardado en SQLite, exportar e importar copias, y la instalación del APK firmado.
+Versión **0.1, en pruebas**: puede haber fallos. Si encuentras uno, cuéntalo en las [issues](https://github.com/Glinbor10/holgura/issues/new/choose) sin pegar tus datos reales.
 
 ## Qué viene después
 
@@ -92,40 +82,6 @@ Versión **0.1, en pruebas**.
 - [ ] Versión web instalable para iPhone
 - [ ] Presupuestos por categoría con avisos
 
-## Desarrollo
-
-Pila: React, TypeScript, Vite, MUI y Capacitor para empaquetar la app Android. La base de datos es SQLite.
-
-```bash
-cd app
-npm ci
-npm run dev      # en el navegador (guarda los datos en localStorage)
-npx tsc -b       # tipos
-npm test         # tests de la lógica y de la capa de datos
-npm run build
-```
-
-Las reglas del dinero viven en `app/src/domain` como funciones puras, sin acceso a la base de datos ni a la interfaz, y por eso se prueban fácilmente.
-
-| Carpeta | Contenido |
-|---|---|
-| [`app/`](app/README.md) | Código de la app |
-| [`openspec/`](openspec/changes/v0-1-mvp/proposal.md) | Especificación del producto, diseño técnico y tareas |
-| [`docs/`](docs/SIGNING.md) | Cómo firmar el APK y capturas de pantalla |
-| `.github/workflows/` | CI de las pull requests y publicación de versiones con su APK |
-
-### Publicar una versión
-
-```bash
-git tag v0.2.0 && git push origin v0.2.0
-```
-
-O desde **Actions > Release > Run workflow**. El workflow compila el APK y crea la release con él adjunto. Sin clave de firma, la release sale como pre-release con un APK de debug.
-
-## Contribuir
-
-Este repositorio es público, pero `main` está protegida: los cambios entran solo por pull request y necesitan la aprobación del propietario. Antes de abrir una PR, comprueba que `npx tsc -b`, `npm test` y `npm run build` pasan. Para dudas o errores usa las [issues](https://github.com/Glinbor10/holgura/issues/new/choose). Las vulnerabilidades se reportan en privado ([`SECURITY.md`](SECURITY.md)).
-
 ## Licencia
 
 [PolyForm Noncommercial 1.0.0](LICENSE). Puedes usar, estudiar y modificar Holgura para fines **no comerciales**: uso personal, aficiones, educación y organizaciones sin ánimo de lucro. El uso comercial necesita permiso previo del titular.
@@ -133,3 +89,5 @@ Este repositorio es público, pero `main` está protegida: los cambios entran so
 Es una licencia de código disponible, no una licencia open-source en el sentido estricto de la OSI, que no permite restringir el uso comercial.
 
 Required Notice: Copyright (c) 2026 Guillermo Linares Borrego
+
+<sub>Código y guía de desarrollo: [`docs/DESARROLLO.md`](docs/DESARROLLO.md)</sub>
