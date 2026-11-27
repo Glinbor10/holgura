@@ -49,7 +49,6 @@ const DockTab = ({ tab, active }: { tab: Tab; active: boolean }) => (
   <Box
     component={Link}
     to={tab.path}
-    viewTransition
     aria-current={active ? 'page' : undefined}
     sx={{
       display: 'flex',

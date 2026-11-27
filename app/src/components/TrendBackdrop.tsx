@@ -19,13 +19,13 @@ export const TrendBackdrop = ({ kind }: { kind: 'income' | 'expense' }) => (
     aria-hidden
     sx={{
       position: 'absolute',
-      top: 64,
+      top: 40,
       left: 0,
       right: 0,
-      height: 230,
+      height: 190,
       pointerEvents: 'none',
       color: kind === 'income' ? 'success.main' : 'error.main',
-      opacity: 0.2,
+      opacity: 0.22,
     }}
   >
     <svg viewBox="0 0 252 176" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
