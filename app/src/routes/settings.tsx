@@ -56,6 +56,7 @@ export const settingsAction = async ({ request }: ActionFunctionArgs) => {
       }
       await mutate((data) =>
         setPayrollTemplate(data, {
+          amountCents: parseEuros(String(form.get('payrollAmount') ?? '')) ?? undefined,
           lines,
           remainderDestinationId: String(form.get('remainder')),
           fundsNextMonth: form.get('fundsNextMonth') === 'on',
@@ -167,11 +168,25 @@ export const SettingsScreen = () => {
       <Box>
         <Typography variant="h6">Reparto de la nómina</Typography>
         <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>
-          Cuánto va a cada destino cuando cobras. Lo que no asignes va al destino que elijas.
+          Tu nómina habitual y cuánto va a cada destino cuando cobras. Lo que no asignes va al destino que elijas.
         </Typography>
         <fetcher.Form method="post">
           <input type="hidden" name="intent" value="template-save" />
           <Group>
+            <GroupRow>
+              <Typography sx={{ flex: 1, fontWeight: 700 }}>Importe de tu nómina</Typography>
+              <TextField
+                name="payrollAmount"
+                size="small"
+                placeholder="Opcional"
+                defaultValue={centsToInput(data.payrollTemplate.amountCents ?? 0)}
+                sx={{ width: 140 }}
+                slotProps={{
+                  htmlInput: { inputMode: 'decimal', 'aria-label': 'Importe de tu nómina', style: { textAlign: 'right' } },
+                  input: { endAdornment: <InputAdornment position="end">€</InputAdornment> },
+                }}
+              />
+            </GroupRow>
             {destinations.map((destination) => (
               <GroupRow key={destination.id}>
                 <Typography sx={{ flex: 1, fontWeight: 700 }}>{destination.name}</Typography>

@@ -10,6 +10,7 @@ import type { AppData } from '../data/appData';
 import { generateRecurring } from '../data/mutations';
 import { loadData, mutate } from '../data/store';
 import { todayIso } from '../domain/dates';
+import { INSET_BOTTOM, INSET_TOP } from '../insets';
 import type { IsoDate } from '../domain/types';
 
 export interface RootData {
@@ -67,9 +68,9 @@ const DockTab = ({ tab, active }: { tab: Tab; active: boolean }) => (
 
 export const Layout = () => {
   const { pathname } = useLocation();
-  const hideDock = pathname === '/add' || pathname.startsWith('/edit/');
+  const hideDock = pathname === '/add' || pathname === '/payroll' || pathname.startsWith('/edit/');
   return (
-    <Box sx={{ minHeight: '100dvh', pb: hideDock ? 0 : 'calc(120px + env(safe-area-inset-bottom))', pt: 'env(safe-area-inset-top)' }}>
+    <Box sx={{ minHeight: '100dvh', pb: hideDock ? 0 : `calc(120px + ${INSET_BOTTOM})`, pt: INSET_TOP }}>
       <Container maxWidth="sm" sx={{ py: 2 }}>
         <Outlet />
       </Container>
@@ -80,7 +81,7 @@ export const Layout = () => {
             position: 'fixed',
             left: 0,
             right: 0,
-            bottom: 'calc(12px + env(safe-area-inset-bottom))',
+            bottom: `calc(12px + ${INSET_BOTTOM})`,
             mx: 'auto',
             width: 'calc(100% - 24px)',
             maxWidth: 520,

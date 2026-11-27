@@ -23,7 +23,7 @@ Orden TDD: primero el test que falla, luego el mínimo código. `[x]` = hecha.
 ## 4. UI (`src/routes`)
 - [x] 4.1 Layout, tema MUI y navegación inferior
 - [x] 4.2 Inicio (available, ahorro, últimos movimientos, avisos)
-- [x] 4.3 Añadir movimiento (gasto rápido / ingreso / nómina con reparto)
+- [x] 4.3 Añadir movimiento (gasto rápido / ingreso). La nómina es una pantalla propia (`/payroll`): importe prellenado desde Ajustes, para qué mes es y reparto de la plantilla
 - [x] 4.4 Movimientos (listado, editar, borrar, mes cerrado)
 - [x] 4.5 Fijos (CRUD)
 - [x] 4.6 Cierre de mes
@@ -35,12 +35,12 @@ Orden TDD: primero el test que falla, luego el mínimo código. `[x]` = hecha.
 - [x] 5.3 Detalles Android: botón "atrás" (sale solo desde Inicio), icono adaptable propio, arranque a juego, `SystemBars` con márgenes `css`, pantalla de error en vez de pantalla en blanco
 - [x] 5.4 Permiso `INTERNET` quitado del manifiesto (ninguna librería lo declara). **Verificar en el móvil que la app arranca**; si no, volver a ponerlo. `allowBackup` se deja activo: "solo en el móvil" significa que la app no usa servidores, las copias son otra cosa.
 - [x] 5.5 Nombre **Holgura**, id `app.holgura` (el `namespace` Java sigue siendo `com.savingstracker.app`; el id y el namespace pueden diferir)
-- [x] 5.6 Firma: el workflow firma con secretos de GitHub si existen (`docs/SIGNING.md`) y sube el `versionCode` con el número de ejecución. **Pendiente de hacer por el titular: crear la clave y subir los 4 secretos**
-- [x] 5.7 Licencia PolyForm Noncommercial 1.0.0 (`LICENSE`). **Pendiente: rellenar la línea `Required Notice` del README con el titular**
+- [x] 5.6 Firma: el workflow firma con secretos de GitHub si existen (`docs/SIGNING.md`) y sube el `versionCode` con el número de ejecución. Clave creada y 4 secretos subidos; la `v0.1.0` salió firmada.
+- [x] 5.7 Licencia PolyForm Noncommercial 1.0.0 (`LICENSE`), con `Required Notice` rellena en el README.
 - [x] 4.9 Pantallas Fijos, Cierre de mes, Ajustes y Editar rediseñadas al estilo del resto; flujo de cierre de mes recorrido en el navegador (cerrar, ver ahorro) y correcto
-- [ ] 5.2 Generar y probar el APK en un móvil real (requiere Android Studio; instrucciones en app/README.md)
+- [ ] 5.2 Probar el APK en un móvil real (el APK sale del workflow `Release`; la v0.1.0 está firmada)
 
 ## 6. Cierre
 - [x] 6.1 Todos los tests en verde, build de producción OK
-- [x] 6.2 README (inglés) y verificación de escenarios de la spec
+- [x] 6.2 README (español, para visitantes), guía de desarrollo en `docs/DESARROLLO.md` y verificación de escenarios de la spec
 - [ ] 6.3 Probar SQLite y exportar/importar en un dispositivo Android (solo verificado en navegador)

@@ -1,27 +1,19 @@
-import BackspaceOutlinedIcon from '@mui/icons-material/BackspaceOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Alert, Box, Button, ButtonBase, Collapse, IconButton, InputAdornment, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Alert, Box, Button, Collapse, IconButton, Stack, TextField, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useState } from 'react';
 import { Form, Link, redirect, useActionData, useSearchParams, type ActionFunctionArgs } from 'react-router-dom';
+import { AmountDisplay, Keypad } from '../components/AmountPad';
 import { CategoryPicker } from '../components/CategoryPicker';
 import { errorMessage } from '../data/errors';
 import { addExpense, addIncome } from '../data/mutations';
 import { mutate } from '../data/store';
-import { pressKey } from '../domain/amountInput';
 import { monthOf } from '../domain/dates';
-import { centsToInput, formatEuros, parseEuros } from '../domain/money';
-import { applyTemplate, defaultFundsMonth } from '../domain/payrollSplit';
+import { formatEuros, parseEuros } from '../domain/money';
+import { INSET_BOTTOM, INSET_TOP } from '../insets';
 import { useRootData } from './root';
 
-type Kind = 'expense' | 'income' | 'payroll';
-
-const KEY_ROWS = [
-  ['1', '2', '3'],
-  ['4', '5', '6'],
-  ['7', '8', '9'],
-  [',', '0', 'back'],
-];
+type Kind = 'expense' | 'income';
 
 export const addAction = async ({ request }: ActionFunctionArgs) => {
   const form = await request.formData();
@@ -38,15 +30,6 @@ export const addAction = async ({ request }: ActionFunctionArgs) => {
     } else if (kind === 'income') {
       const allocations = [{ destinationId: String(form.get('destinationId')), amountCents: amount }];
       await mutate((data) => addIncome(data, { date, allocations, fundsMonth: String(form.get('fundsMonth')), note }));
-    } else {
-      const allocations = [...form.entries()]
-        .filter(([key]) => key.startsWith('alloc-'))
-        .map(([key, value]) => ({ destinationId: key.slice('alloc-'.length), amountCents: parseEuros(String(value)) ?? 0 }))
-        .filter((allocation) => allocation.amountCents > 0);
-      if (allocations.reduce((sum, allocation) => sum + allocation.amountCents, 0) !== amount) {
-        return { error: 'El reparto tiene que sumar exactamente el importe de la nómina.' };
-      }
-      await mutate((data) => addIncome(data, { date, allocations, fundsMonth: String(form.get('fundsMonth')), note }));
     }
   } catch (error) {
     return { error: errorMessage(error) };
@@ -54,7 +37,7 @@ export const addAction = async ({ request }: ActionFunctionArgs) => {
   return redirect('/');
 };
 
-const isKind = (value: string | null): value is Kind => value === 'expense' || value === 'income' || value === 'payroll';
+const isKind = (value: string | null): value is Kind => value === 'expense' || value === 'income';
 
 export const AddScreen = () => {
   const { data, today } = useRootData();
@@ -67,22 +50,15 @@ export const AddScreen = () => {
   const [amountText, setAmountText] = useState('');
   const [categoryId, setCategoryId] = useState(categories[0]?.id ?? '');
   const [destinationId, setDestinationId] = useState(destinations.find((d) => d.kind === 'SPENDING')?.id ?? '');
-  const [manual, setManual] = useState<Record<string, string> | null>(null);
   const [showDetails, setShowDetails] = useState(false);
 
   const amount = parseEuros(amountText);
-  const split = applyTemplate(amount ?? 0, data.payrollTemplate);
-  const previewOf = (id: string): string =>
-    split.ok ? centsToInput(split.allocations.find((allocation) => allocation.destinationId === id)?.amountCents ?? 0) : '';
-  const allocationText = (id: string): string => manual?.[id] ?? previewOf(id);
-  const editAllocation = (id: string, value: string) =>
-    setManual({ ...Object.fromEntries(destinations.map((d) => [d.id, allocationText(d.id)])), [id]: value });
-  const fundsMonth = kind === 'payroll' ? defaultFundsMonth(today, data.payrollTemplate.fundsNextMonth) : monthOf(today);
+  const fundsMonth = monthOf(today);
   const submitLabel = amount === null ? 'Escribe un importe' : `Guardar ${formatEuros(amount)}`;
 
   return (
     <Form method="post">
-      <Stack spacing={2.5} sx={{ minHeight: 'calc(100dvh - 32px)' }}>
+      <Stack spacing={2.5} sx={{ minHeight: `calc(100dvh - 32px - ${INSET_TOP})` }}>
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5 }}>
           <ToggleButtonGroup
             exclusive
@@ -93,7 +69,6 @@ export const AddScreen = () => {
           >
             <ToggleButton value="expense">Gasto</ToggleButton>
             <ToggleButton value="income">Ingreso</ToggleButton>
-            <ToggleButton value="payroll">Nómina</ToggleButton>
           </ToggleButtonGroup>
           <IconButton component={Link} to="/" viewTransition aria-label="Cerrar sin guardar">
             <CloseIcon />
@@ -107,17 +82,7 @@ export const AddScreen = () => {
 
         {result?.error ? <Alert severity="error">{result.error}</Alert> : null}
 
-        <Box sx={{ textAlign: 'center', py: 1 }} aria-live="polite">
-          <Typography
-            component="span"
-            sx={{ fontSize: 'clamp(3.2rem, 18vw, 4.6rem)', fontWeight: 800, letterSpacing: '-0.04em', color: amountText ? 'text.primary' : 'text.secondary' }}
-          >
-            {amountText || '0'}
-          </Typography>
-          <Typography component="span" sx={{ fontSize: '2.4rem', fontWeight: 700, color: 'text.secondary', ml: 0.75 }}>
-            €
-          </Typography>
-        </Box>
+        <AmountDisplay text={amountText} />
 
         {kind === 'expense' ? (
           <CategoryPicker categories={categories} value={categoryId} onChange={setCategoryId} />
@@ -136,28 +101,6 @@ export const AddScreen = () => {
                 {destination.name}
               </Button>
             ))}
-          </Stack>
-        ) : null}
-
-        {kind === 'payroll' ? (
-          <Stack spacing={1.25}>
-            <Typography sx={{ fontWeight: 800 }}>Reparto</Typography>
-            {destinations.map((destination) => (
-              <TextField
-                key={destination.id}
-                name={`alloc-${destination.id}`}
-                label={destination.name}
-                value={allocationText(destination.id)}
-                onChange={(event) => editAllocation(destination.id, event.target.value)}
-                slotProps={{ htmlInput: { inputMode: 'decimal' }, input: { endAdornment: <InputAdornment position="end">€</InputAdornment> } }}
-              />
-            ))}
-            {split.ok ? null : <Alert severity="warning">Las cantidades fijas de tu plantilla superan esta nómina. Ajusta el reparto a mano.</Alert>}
-            {manual ? (
-              <Box>
-                <Button onClick={() => setManual(null)}>Volver al reparto de la plantilla</Button>
-              </Box>
-            ) : null}
           </Stack>
         ) : null}
 
@@ -185,20 +128,9 @@ export const AddScreen = () => {
 
         <Box sx={{ flex: 1 }} />
 
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0.5 }}>
-          {KEY_ROWS.flat().map((key) => (
-            <ButtonBase
-              key={key}
-              onClick={() => setAmountText(pressKey(amountText, key))}
-              aria-label={key === 'back' ? 'Borrar último dígito' : key === ',' ? 'Coma decimal' : key}
-              sx={{ height: 56, borderRadius: '16px', fontSize: '1.65rem', fontWeight: 700, '&:active': { bgcolor: 'action.hover' } }}
-            >
-              {key === 'back' ? <BackspaceOutlinedIcon /> : key}
-            </ButtonBase>
-          ))}
-        </Box>
+        <Keypad text={amountText} onChange={setAmountText} />
 
-        <Box sx={{ pb: 'calc(8px + env(safe-area-inset-bottom))' }}>
+        <Box sx={{ pb: `calc(8px + ${INSET_BOTTOM})` }}>
           <Button type="submit" variant="contained" size="large" fullWidth disabled={amount === null}>
             {submitLabel}
           </Button>

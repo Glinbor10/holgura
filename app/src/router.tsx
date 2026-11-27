@@ -5,6 +5,7 @@ import { EditScreen, editAction } from './routes/edit';
 import { ErrorScreen } from './routes/error';
 import { HistoryScreen } from './routes/history';
 import { HomeScreen } from './routes/home';
+import { PayrollScreen, payrollAction } from './routes/payroll';
 import { MovementsScreen, movementsAction } from './routes/movements';
 import { RecurringScreen, recurringAction } from './routes/recurring';
 import { Layout, rootLoader } from './routes/root';
@@ -21,6 +22,7 @@ export const router = createHashRouter([
     children: [
       { index: true, element: <HomeScreen /> },
       { path: 'add', element: <AddScreen />, action: addAction },
+      { path: 'payroll', element: <PayrollScreen />, action: payrollAction },
       { path: 'edit/:id', element: <EditScreen />, action: editAction },
       { path: 'movements', element: <MovementsScreen />, action: movementsAction },
       { path: 'recurring', element: <RecurringScreen />, action: recurringAction },

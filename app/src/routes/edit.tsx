@@ -8,6 +8,7 @@ import { updateTransaction } from '../data/mutations';
 import { mutate } from '../data/store';
 import { centsToInput, parseEuros } from '../domain/money';
 import type { Transaction } from '../domain/types';
+import { INSET_BOTTOM, INSET_TOP } from '../insets';
 import { useRootData } from './root';
 
 export const editAction = async ({ request, params }: ActionFunctionArgs) => {
@@ -66,7 +67,7 @@ export const EditScreen = () => {
 
   return (
     <Form method="post">
-      <Stack spacing={3} sx={{ minHeight: 'calc(100dvh - 32px)' }}>
+      <Stack spacing={3} sx={{ minHeight: `calc(100dvh - 32px - ${INSET_TOP})` }}>
         <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography variant="h5">{tx.type === 'EXPENSE' ? 'Editar gasto' : 'Editar ingreso'}</Typography>
           <IconButton aria-label="Cerrar sin guardar" onClick={() => navigate(-1)}>
@@ -124,7 +125,7 @@ export const EditScreen = () => {
         <TextField name="note" label="Nota (opcional)" defaultValue={tx.note ?? ''} />
 
         <Box sx={{ flex: 1 }} />
-        <Box sx={{ pb: 'calc(8px + env(safe-area-inset-bottom))' }}>
+        <Box sx={{ pb: `calc(8px + ${INSET_BOTTOM})` }}>
           <Button type="submit" variant="contained" size="large" fullWidth>
             Guardar cambios
           </Button>
