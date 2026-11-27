@@ -13,7 +13,7 @@ import { INSET_BOTTOM, INSET_TOP } from '../insets';
 import { useRootData } from './root';
 import { monthLabel } from './shared';
 
-export const PAYROLL_NOTE = 'Nómina';
+const PAYROLL_NOTE = 'Nómina';
 
 export const payrollAction = async ({ request }: ActionFunctionArgs) => {
   const form = await request.formData();
