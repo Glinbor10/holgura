@@ -163,7 +163,7 @@ export const SettingsScreen = () => {
 
   return (
     <Stack spacing={3.5}>
-      <Typography variant="h5">Ajustes</Typography>
+      <Typography variant="h5">Configuración</Typography>
       {fetcher.data?.error ? <Alert severity="error">{fetcher.data.error}</Alert> : null}
 
       <Group>

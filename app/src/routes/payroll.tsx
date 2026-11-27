@@ -89,12 +89,12 @@ export const PayrollScreen = () => {
                 </Stack>
               ))}
               <Button component={Link} to="/settings" size="small" sx={{ mt: 0.5, ml: -1 }}>
-                Cambiar en Ajustes
+                Cambiar en Configuración
               </Button>
             </Box>
           )
         ) : (
-          <Alert severity="warning" action={<Button component={Link} to="/settings" color="inherit">Ajustes</Button>}>
+          <Alert severity="warning" action={<Button component={Link} to="/settings" color="inherit">Configuración</Button>}>
             Lo que va a cada destino supera esta nómina.
           </Alert>
         )}

@@ -52,7 +52,7 @@ La app **no tiene permiso de internet**: no puede enviar nada a ningún sitio.
   <img src="docs/screenshots/fijos-oscuro.png" width="220" alt="Gastos fijos con interruptor para pausarlos">
 </p>
 <p align="center">
-  <img src="docs/screenshots/ajustes-oscuro.png" width="220" alt="Ajustes: reparto de la nómina, destinos, categorías y copia de seguridad">
+  <img src="docs/screenshots/ajustes-oscuro.png" width="220" alt="Configuración: nómina, categorías, gastos fijos y copia de seguridad">
   <img src="docs/screenshots/inicio-claro.png" width="220" alt="Inicio en modo claro">
   <img src="docs/screenshots/nomina-claro.png" width="220" alt="Registro de la nómina en modo claro">
 </p>
