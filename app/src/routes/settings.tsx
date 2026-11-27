@@ -3,7 +3,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Capacitor } from '@capacitor/core';
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
-import { Alert, Box, Button, ButtonBase, IconButton, InputAdornment, MenuItem, Stack, Switch, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, ButtonBase, IconButton, InputAdornment, Stack, Switch, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import { Link, useFetcher, useRevalidator, type ActionFunctionArgs } from 'react-router-dom';
 import { Group, GroupRow } from '../components/Group';
@@ -16,12 +16,13 @@ import {
   archiveDestination,
   renameCategory,
   renameDestination,
+  setPayrollLine,
   setPayrollTemplate,
 } from '../data/mutations';
 import { mutate, replaceData } from '../data/store';
 import { destinationBalance } from '../domain/balances';
 import { centsToInput, formatEuros, parseEuros } from '../domain/money';
-import type { Allocation } from '../domain/types';
+import type { Cents, PayrollTemplate } from '../domain/types';
 import { useRootData } from './root';
 import { CategoryBadge } from './shared';
 
@@ -43,25 +44,22 @@ export const settingsAction = async ({ request }: ActionFunctionArgs) => {
       await mutate((data) => renameCategory(data, id, name));
     } else if (intent === 'category-archive') {
       await mutate((data) => archiveCategory(data, id));
-    } else if (intent === 'template-save') {
-      const lines: Allocation[] = [];
-      for (const [key, value] of form.entries()) {
-        if (key.startsWith('line-') && String(value).trim() !== '') {
-          const amountCents = parseEuros(String(value));
-          if (amountCents === null) {
-            return { error: 'Revisa los importes del reparto de la nómina.' };
-          }
-          lines.push({ destinationId: key.slice('line-'.length), amountCents });
-        }
+    } else if (intent === 'payroll-amount') {
+      const text = String(form.get('amount') ?? '').trim();
+      const amountCents = text === '' ? undefined : parseEuros(text);
+      if (amountCents === null) {
+        return { error: 'Escribe un importe válido para la nómina.' };
       }
-      await mutate((data) =>
-        setPayrollTemplate(data, {
-          amountCents: parseEuros(String(form.get('payrollAmount') ?? '')) ?? undefined,
-          lines,
-          remainderDestinationId: String(form.get('remainder')),
-          fundsNextMonth: form.get('fundsNextMonth') === 'on',
-        }),
-      );
+      await mutate((data) => setPayrollTemplate(data, { ...data.payrollTemplate, amountCents }));
+    } else if (intent === 'payroll-funds-next') {
+      await mutate((data) => setPayrollTemplate(data, { ...data.payrollTemplate, fundsNextMonth: form.get('value') === 'true' }));
+    } else if (intent === 'destination-payroll') {
+      const text = String(form.get('amount') ?? '').trim();
+      const amountCents = text === '' ? 0 : parseEuros(text);
+      if (amountCents === null) {
+        return { error: 'Escribe un importe válido para el destino.' };
+      }
+      await mutate((data) => setPayrollLine(data, id, amountCents));
     }
   } catch (error) {
     return { error: errorMessage(error) };
@@ -97,6 +95,23 @@ const NameInput = ({ value, onCommit, label }: { value: string; onCommit: (name:
     fullWidth
     onBlur={(event) => (event.target.value.trim() !== '' && event.target.value.trim() !== value ? onCommit(event.target.value.trim()) : undefined)}
     slotProps={{ htmlInput: { 'aria-label': label }, input: { disableUnderline: true, sx: { fontWeight: 700, fontSize: '1rem' } } }}
+  />
+);
+
+const payrollLineCents = (template: PayrollTemplate, destinationId: string): Cents =>
+  template.lines.find((line) => line.destinationId === destinationId)?.amountCents ?? 0;
+
+const AmountField = ({ cents, label, placeholder, onCommit }: { cents: Cents; label: string; placeholder: string; onCommit: (amount: string) => void }) => (
+  <TextField
+    size="small"
+    placeholder={placeholder}
+    defaultValue={centsToInput(cents)}
+    onBlur={(event) => (event.target.value.trim() !== centsToInput(cents) ? onCommit(event.target.value) : undefined)}
+    sx={{ width: 120 }}
+    slotProps={{
+      htmlInput: { inputMode: 'decimal', 'aria-label': label, style: { textAlign: 'right' } },
+      input: { endAdornment: <InputAdornment position="end">€</InputAdornment> },
+    }}
   />
 );
 
@@ -166,72 +181,39 @@ export const SettingsScreen = () => {
       </Group>
 
       <Box>
-        <Typography variant="h6">Reparto de la nómina</Typography>
-        <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>
-          Tu nómina habitual y cuánto va a cada destino cuando cobras. Lo que no asignes va al destino que elijas.
-        </Typography>
-        <fetcher.Form method="post">
-          <input type="hidden" name="intent" value="template-save" />
-          <Group>
-            <GroupRow>
-              <Typography sx={{ flex: 1, fontWeight: 700 }}>Importe de tu nómina</Typography>
-              <TextField
-                name="payrollAmount"
-                size="small"
-                placeholder="Opcional"
-                defaultValue={centsToInput(data.payrollTemplate.amountCents ?? 0)}
-                sx={{ width: 140 }}
-                slotProps={{
-                  htmlInput: { inputMode: 'decimal', 'aria-label': 'Importe de tu nómina', style: { textAlign: 'right' } },
-                  input: { endAdornment: <InputAdornment position="end">€</InputAdornment> },
-                }}
-              />
-            </GroupRow>
-            {destinations.map((destination) => (
-              <GroupRow key={destination.id}>
-                <Typography sx={{ flex: 1, fontWeight: 700 }}>{destination.name}</Typography>
-                <TextField
-                  name={`line-${destination.id}`}
-                  size="small"
-                  placeholder="Resto"
-                  defaultValue={centsToInput(data.payrollTemplate.lines.find((line) => line.destinationId === destination.id)?.amountCents ?? 0)}
-                  sx={{ width: 140 }}
-                  slotProps={{
-                    htmlInput: { inputMode: 'decimal', 'aria-label': `Importe fijo para ${destination.name}`, style: { textAlign: 'right' } },
-                    input: { endAdornment: <InputAdornment position="end">€</InputAdornment> },
-                  }}
-                />
-              </GroupRow>
-            ))}
-            <GroupRow>
-              <Typography sx={{ flex: 1, fontWeight: 700 }}>El resto va a</Typography>
-              <TextField select name="remainder" size="small" defaultValue={data.payrollTemplate.remainderDestinationId} sx={{ minWidth: 140 }}>
-                {destinations.map((destination) => (
-                  <MenuItem key={destination.id} value={destination.id}>
-                    {destination.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </GroupRow>
-            <GroupRow>
-              <Box sx={{ flex: 1 }}>
-                <Typography sx={{ fontWeight: 700 }}>Financia el mes siguiente</Typography>
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                  Para quien cobra a final de mes
-                </Typography>
-              </Box>
-              <Switch name="fundsNextMonth" defaultChecked={data.payrollTemplate.fundsNextMonth} />
-            </GroupRow>
-          </Group>
-          <Button type="submit" variant="contained" sx={{ mt: 1.5 }}>
-            Guardar reparto
-          </Button>
-        </fetcher.Form>
+        <Typography variant="h6">Tu nómina</Typography>
+        <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>Se usa al pulsar "Ha llegado la nómina".</Typography>
+        <Group>
+          <GroupRow>
+            <Typography sx={{ flex: 1, fontWeight: 700 }}>Importe habitual</Typography>
+            <AmountField
+              key={data.payrollTemplate.amountCents ?? 0}
+              label="Importe habitual de la nómina"
+              cents={data.payrollTemplate.amountCents ?? 0}
+              placeholder="Opcional"
+              onCommit={(amount) => submit({ intent: 'payroll-amount', amount })}
+            />
+          </GroupRow>
+          <GroupRow>
+            <Box sx={{ flex: 1 }}>
+              <Typography sx={{ fontWeight: 700 }}>Financia el mes siguiente</Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                Para quien cobra a final de mes
+              </Typography>
+            </Box>
+            <Switch
+              checked={data.payrollTemplate.fundsNextMonth}
+              onChange={(event) => submit({ intent: 'payroll-funds-next', value: String(event.target.checked) })}
+              slotProps={{ input: { 'aria-label': 'Financia el mes siguiente' } }}
+            />
+          </GroupRow>
+        </Group>
       </Box>
 
       <Box>
-        <Typography variant="h6" sx={{ mb: 1.5 }}>
-          Destinos
+        <Typography variant="h6">Destinos</Typography>
+        <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>
+          Dónde está tu dinero. Pon cuánto va a cada uno de cada nómina: Gastos recibe el resto.
         </Typography>
         <Group>
           {destinations.map((destination) => (
@@ -246,10 +228,23 @@ export const SettingsScreen = () => {
                   {destination.kind === 'SPENDING' ? 'Para gastar' : 'Ahorro'}, {formatEuros(destinationBalance(destination, data.transactions))}
                 </Typography>
               </Box>
-              {destination.kind === 'SPENDING' ? null : (
-                <IconButton aria-label={`Archivar ${destination.name}`} size="small" onClick={() => confirmArchive('destination-archive', destination.id, destination.name)}>
-                  <ArchiveOutlinedIcon fontSize="small" />
-                </IconButton>
+              {destination.kind === 'SPENDING' ? (
+                <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 700 }}>
+                  Recibe el resto
+                </Typography>
+              ) : (
+                <>
+                  <AmountField
+                    key={`${destination.id}-${payrollLineCents(data.payrollTemplate, destination.id)}`}
+                    label={`Cuánto va a ${destination.name} de cada nómina`}
+                    cents={payrollLineCents(data.payrollTemplate, destination.id)}
+                    placeholder="0"
+                    onCommit={(amount) => submit({ intent: 'destination-payroll', id: destination.id, amount })}
+                  />
+                  <IconButton aria-label={`Archivar ${destination.name}`} size="small" onClick={() => confirmArchive('destination-archive', destination.id, destination.name)}>
+                    <ArchiveOutlinedIcon fontSize="small" />
+                  </IconButton>
+                </>
               )}
             </GroupRow>
           ))}

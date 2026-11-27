@@ -5,6 +5,7 @@ const MESSAGES: Record<string, string> = {
   SPENDING_ALREADY_EXISTS: 'Ya existe un destino de gastos activo.',
   CANNOT_ARCHIVE_SPENDING: 'El destino de gastos no se puede archivar.',
   DESTINATION_HAS_BALANCE: 'El destino tiene saldo. Déjalo en 0 antes de archivarlo.',
+  SPENDING_GETS_THE_REST: 'El destino de gastos recibe siempre lo que queda de la nómina.',
   MISSING_DESTINATIONS: 'Hacen falta un destino de gastos y uno de ahorro activos.',
 };
 
