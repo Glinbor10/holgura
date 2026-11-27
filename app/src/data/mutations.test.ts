@@ -81,6 +81,21 @@ describe('recurring expenses', () => {
     const twice = generateRecurring(once, '2026-12-10');
     expect(twice.transactions.map((tx) => tx.date)).toEqual(['2026-10-05', '2026-11-05', '2026-12-05']);
   });
+
+  it('does not bring back a generated expense the user deleted', () => {
+    const generated = generateRecurring(withRent(), '2026-12-10');
+    const november = generated.transactions.find((tx) => tx.date === '2026-11-05')!;
+    const deleted = deleteTransaction(generated, november.id);
+    const reloaded = generateRecurring(deleted, '2026-12-10');
+    expect(reloaded.transactions.map((tx) => tx.date)).toEqual(['2026-10-05', '2026-12-05']);
+  });
+
+  it('still generates the next month after deleting one occurrence', () => {
+    const generated = generateRecurring(withRent(), '2026-11-10');
+    const october = generated.transactions.find((tx) => tx.date === '2026-10-05')!;
+    const later = generateRecurring(deleteTransaction(generated, october.id), '2026-12-10');
+    expect(later.transactions.map((tx) => tx.date)).toEqual(['2026-11-05', '2026-12-05']);
+  });
 });
 
 describe('destinations', () => {
