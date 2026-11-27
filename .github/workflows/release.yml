@@ -1,4 +1,4 @@
-﻿name: Release
+name: Release
 
 # Builds the Android APK and publishes a GitHub Release with it attached.
 # Two ways to start it:
