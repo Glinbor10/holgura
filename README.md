@@ -1,4 +1,4 @@
-﻿# Holgura
+# Holgura
 
 [![CI](https://github.com/Glinbor10/holgura/actions/workflows/ci.yml/badge.svg)](https://github.com/Glinbor10/holgura/actions/workflows/ci.yml)
 [![Última versión](https://img.shields.io/github/v/release/Glinbor10/holgura?include_prereleases&label=versi%C3%B3n)](https://github.com/Glinbor10/holgura/releases/latest)

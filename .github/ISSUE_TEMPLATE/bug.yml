@@ -1,4 +1,4 @@
-﻿name: Error
+name: Error
 description: Algo no funciona como debería
 labels: [bug]
 body:
