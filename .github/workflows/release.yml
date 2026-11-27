@@ -89,6 +89,27 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
 
+      - name: Check the APK has no network permission
+        working-directory: ${{ github.workspace }}
+        run: |
+          APK=$(ls app/android/app/build/outputs/apk/*/*.apk | head -1)
+          AAPT2=$(ls "$ANDROID_HOME"/build-tools/*/aapt2 | sort -V | tail -1)
+          "$AAPT2" dump permissions "$APK" | grep '^uses-permission' | sed -E "s/.*name='([^']+)'.*/\1/" | sort -u > "$RUNNER_TEMP/perms.txt" || true
+          cat "$RUNNER_TEMP/perms.txt"
+          if grep -Eq 'INTERNET|NETWORK_STATE|WIFI_STATE' "$RUNNER_TEMP/perms.txt"; then
+            echo "::error::The APK declares a network permission"
+            exit 1
+          fi
+          {
+            echo "## Privacidad"
+            echo
+            echo "Esta versión **no tiene permiso de internet ni de red**: no puede enviar datos a ningún sitio."
+            echo
+            echo "Permisos que declara el APK (leídos con \`aapt2\` al compilar):"
+            echo
+            if [ -s "$RUNNER_TEMP/perms.txt" ]; then sed 's/^/- \`/; s/$/\`/' "$RUNNER_TEMP/perms.txt"; else echo "- ninguno"; fi
+          } > "$RUNNER_TEMP/notes.md"
+
       - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -100,7 +121,7 @@ jobs:
           FLAGS=""
           if [ "$SIGNED" != "true" ]; then FLAGS="--prerelease"; fi
           gh release create "$TAG" "$RUNNER_TEMP/out/holgura-$TAG.apk" \
-            --target "$GITHUB_SHA" --title "Holgura $TAG" --generate-notes $FLAGS
+            --target "$GITHUB_SHA" --title "Holgura $TAG" --notes-file "$RUNNER_TEMP/notes.md" --generate-notes $FLAGS
 
       - uses: actions/upload-artifact@v7
         with:

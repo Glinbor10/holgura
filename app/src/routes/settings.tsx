@@ -310,6 +310,13 @@ export const SettingsScreen = () => {
         </Stack>
       </Box>
 
+      <Box>
+        <Typography variant="h6">Privacidad</Typography>
+        <Typography sx={{ color: 'text.secondary' }}>
+          Holgura no tiene permiso de internet ni cuentas. Tus datos solo están en este móvil y Android no los copia a ningún sitio: las copias las haces tú.
+        </Typography>
+      </Box>
+
       <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', pb: 1 }}>
         Holgura. Uso no comercial (PolyForm Noncommercial 1.0.0).
       </Typography>

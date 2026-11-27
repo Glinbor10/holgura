@@ -24,7 +24,8 @@ arranque sin el permiso `INTERNET`, y los márgenes de la barra de estado y el t
 - Licencia **PolyForm Noncommercial 1.0.0**: sin uso comercial sin su permiso (es código disponible, no OSI).
   Titular: Guillermo Linares Borrego.
 - "Solo en el móvil" = la app no usa servidores ni servicios externos. Las copias de seguridad (JSON a Drive o
-  local) son aparte y las hace el usuario. `allowBackup` queda activo.
+  local) son aparte y las hace el usuario. `allowBackup` está **desactivado** (decisión del 27/11/2026): así la
+  frase "tus datos no salen del móvil" es literal y recuperar datos solo es posible con la copia exportada.
 - Permiso `INTERNET` quitado: si la app no abre en el móvil, hay que devolverlo.
 - El README es solo para visitantes (qué hace, capturas, descargar el APK). Lo de mantenimiento va en `docs/`.
 - La nómina es una pantalla propia, no un tipo de movimiento de Añadir: el `+` solo ofrece Gasto e Ingreso.
@@ -90,7 +91,9 @@ Antes de dar algo por terminado: `npx tsc -b`, `npm test` y `npm run build` en v
 
 - `applicationId` = `app.holgura`. **No lo cambies**: Android lo trataría como otra app y se perderían los datos.
   El `namespace` Java (`com.savingstracker.app`) es distinto a propósito.
-- La app no declara permisos de Android. No añadas `INTERNET` sin una razón real y sin avisar.
+- La app **no declara `INTERNET` ni ningún permiso de red** (el workflow `Release` falla si aparece uno y lista los
+  permisos en las notas). Las librerías añaden `USE_BIOMETRIC`, `USE_FINGERPRINT` y un permiso interno de androidx,
+  que la app no usa: no digas "ningún permiso", di "sin permiso de internet". No añadas `INTERNET` sin avisar.
 - El APK se firma siempre con la misma clave (ver `docs/SIGNING.md`). **Nunca** commitees una keystore ni sus
   contraseñas, ni las muestres en el chat.
 - El APK se compila en GitHub Actions (workflow `Release`). La máquina del usuario tiene `build-tools` y `adb` en

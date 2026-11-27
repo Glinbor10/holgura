@@ -33,7 +33,7 @@ Orden TDD: primero el test que falla, luego el mínimo código. `[x]` = hecha.
 ## 5. Android
 - [x] 5.1 Configuración de Capacitor y plataforma android
 - [x] 5.3 Detalles Android: botón "atrás" (sale solo desde Inicio), icono adaptable propio, arranque a juego, `SystemBars` con márgenes `css`, pantalla de error en vez de pantalla en blanco
-- [x] 5.4 Permiso `INTERNET` quitado del manifiesto (ninguna librería lo declara). **Verificar en el móvil que la app arranca**; si no, volver a ponerlo. `allowBackup` se deja activo: "solo en el móvil" significa que la app no usa servidores, las copias son otra cosa.
+- [x] 5.4 Permiso `INTERNET` quitado del manifiesto (ninguna librería lo declara). **Verificar en el móvil que la app arranca**; si no, volver a ponerlo. `allowBackup` desactivado (27/11/2026): Android no copia los datos a ningún sitio; las copias son solo las que exporta el usuario. Las librerías añaden `USE_BIOMETRIC`/`USE_FINGERPRINT`, que la app no usa.
 - [x] 5.5 Nombre **Holgura**, id `app.holgura` (el `namespace` Java sigue siendo `com.savingstracker.app`; el id y el namespace pueden diferir)
 - [x] 5.6 Firma: el workflow firma con secretos de GitHub si existen (`docs/SIGNING.md`) y sube el `versionCode` con el número de ejecución. Clave creada y 4 secretos subidos; la `v0.1.0` salió firmada.
 - [x] 5.7 Licencia PolyForm Noncommercial 1.0.0 (`LICENSE`), con `Required Notice` rellena en el README.

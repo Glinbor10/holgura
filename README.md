@@ -7,10 +7,13 @@
 **Cuánto puedes gastar de verdad.**
 
 App Android para controlar tu nómina, tus gastos y tu ahorro.<br>
-Sin conexión, sin cuentas y sin servidores: tus datos no salen de tu móvil.
+Sin conexión, sin cuentas y sin servidores: tus datos no salen de tu móvil.<br>
+La app **no tiene permiso de internet**: no puede enviar nada a ningún sitio.
 
 [![Última versión](https://img.shields.io/github/v/release/Glinbor10/holgura?include_prereleases&label=versi%C3%B3n)](https://github.com/Glinbor10/holgura/releases/latest)
 ![Android](https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white)
+![Sin internet](https://img.shields.io/badge/internet-sin%20permiso-brightgreen)
+![Datos](https://img.shields.io/badge/datos-solo%20en%20tu%20m%C3%B3vil-brightgreen)
 [![Licencia](https://img.shields.io/badge/licencia-PolyForm%20Noncommercial-blue)](LICENSE)
 
 [**⬇ Descargar la app (APK)**](https://github.com/Glinbor10/holgura/releases/latest)
@@ -65,11 +68,15 @@ Holgura separa dos cosas: **dónde está** tu dinero y **para qué mes es**.
 
 ## Privacidad
 
-- Los datos se guardan solo en tu móvil, en una base de datos local.
-- La app no pide ningún permiso de Android y no usa internet.
-- No hay cuentas, ni servidores, ni analíticas.
+Holgura está pensada para que tus finanzas sean solo tuyas. Y no tienes que fiarte de mi palabra:
 
-Las copias de seguridad son cosa tuya: las exportas cuando quieres y las guardas donde quieras.
+- **No tiene permiso de internet.** Sin ese permiso, Android no deja a la app conectarse a ninguna red, aunque quisiera. Compruébalo en los ajustes de tu móvil: *Apps > Holgura > Permisos*.
+- **Cada versión lo demuestra.** Al compilar el APK se leen sus permisos y se publican en las notas de la release; si apareciera algún permiso de red, la versión no se publica.
+- **Sin copia automática de Android.** La copia en la nube de Android está desactivada para esta app: ningún dato pasa a tu cuenta de Google.
+- **Sin cuentas, ni servidores, ni analíticas.** El código es público.
+- **Tus datos están en la memoria privada de la app**, que las demás apps no pueden leer.
+
+Las copias de seguridad son cosa tuya: las exportas cuando quieres y las guardas donde quieras. Si desinstalas la app o cambias de móvil, esa copia es lo que recupera tus datos.
 
 ## Instalar en Android
 
@@ -77,7 +84,7 @@ Las copias de seguridad son cosa tuya: las exportas cuando quieres y las guardas
 2. Ábrelo e instálalo. Android te pedirá permitir la instalación desde orígenes desconocidos.
 
 > [!IMPORTANT]
-> **Antes de actualizar, exporta una copia de seguridad** desde Ajustes y guárdala fuera de la app (Drive, correo…). Si alguna vez tienes que desinstalar la app, esa copia es lo que recupera tus datos.
+> **Antes de actualizar, exporta una copia de seguridad** desde Ajustes y guárdala fuera de la app (Drive, correo…). Android no guarda ninguna copia automática de Holgura: si desinstalas la app, esa copia es lo único que recupera tus datos.
 
 ## Estado
 
