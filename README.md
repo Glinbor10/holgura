@@ -14,7 +14,7 @@ La app **no tiene permiso de internet**: no puede enviar nada a ningún sitio.
 ![Android](https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white)
 ![Sin internet](https://img.shields.io/badge/internet-sin%20permiso-brightgreen)
 ![Datos](https://img.shields.io/badge/datos-solo%20en%20tu%20m%C3%B3vil-brightgreen)
-[![Licencia](https://img.shields.io/badge/licencia-PolyForm%20Noncommercial-blue)](LICENSE)
+[![Licencia](https://img.shields.io/badge/licencia-PolyForm%20Noncommercial-blue)](LICENSE.md)
 
 [**⬇ Descargar la app (APK)**](https://github.com/Glinbor10/holgura/releases/latest)
 
@@ -107,7 +107,7 @@ Versión **0.1, en pruebas**: puede haber fallos. Si encuentras uno, cuéntalo e
 
 ## Licencia
 
-[PolyForm Noncommercial 1.0.0](LICENSE). Puedes usar, estudiar y modificar Holgura para fines **no comerciales**: uso personal, aficiones, educación y organizaciones sin ánimo de lucro. El uso comercial necesita permiso previo del titular.
+[PolyForm Noncommercial 1.0.0](LICENSE.md). Puedes usar, estudiar y modificar Holgura para fines **no comerciales**: uso personal, aficiones, educación y organizaciones sin ánimo de lucro. El uso comercial necesita permiso previo del titular.
 
 Es una licencia de código disponible, no una licencia open-source en el sentido estricto de la OSI, que no permite restringir el uso comercial.
 
