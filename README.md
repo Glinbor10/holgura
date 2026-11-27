@@ -20,7 +20,7 @@ La app **no tiene permiso de internet**: no puede enviar nada a ningún sitio.
 
 <br>
 
-<img src="docs/screenshots/hero.png" width="760" alt="Holgura en tres pantallas: añadir un gasto, el inicio con el dinero disponible y el registro de la nómina">
+<img src="docs/screenshots/hero.png" width="760" alt="Holgura en tres pantallas: el menú para añadir un gasto o un ingreso, el inicio con el dinero disponible y el registro de la nómina">
 
 </div>
 
@@ -40,13 +40,14 @@ La app **no tiene permiso de internet**: no puede enviar nada a ningún sitio.
 ### Así se apunta un gasto
 
 <p align="center">
-  <img src="docs/screenshots/demo.gif" width="300" alt="Animación: se teclea 42,50 €, se elige la categoría Ocio y se guarda; el dinero disponible baja">
+  <img src="docs/screenshots/demo.gif" width="300" alt="Animación: se toca el botón de añadir, se elige Gasto, se teclea 42,50 €, se elige la categoría Ocio y se guarda; el dinero disponible baja">
 </p>
 
 <details>
 <summary>Más capturas</summary>
 <br>
 <p align="center">
+  <img src="docs/screenshots/menu-oscuro.png" width="220" alt="Menú para añadir un gasto (borde rojo) o un ingreso (borde verde)">
   <img src="docs/screenshots/movimientos-oscuro.png" width="220" alt="Movimientos del mes agrupados por día">
   <img src="docs/screenshots/ahorro-oscuro.png" width="220" alt="Histórico de ahorro mes a mes">
   <img src="docs/screenshots/fijos-oscuro.png" width="220" alt="Gastos fijos con interruptor para pausarlos">
