@@ -28,7 +28,7 @@ Orden TDD: primero el test que falla, luego el mínimo código. `[x]` = hecha.
 - [x] 4.5 Fijos (CRUD)
 - [x] 4.6 Cierre de mes
 - [x] 4.7 Histórico
-- [x] 4.8 Ajustes: destinos, categorías, plantilla de nómina, exportar/importar
+- [x] 4.8 Configuración (antes Ajustes): nómina (importe y cuánto ahorrar), categorías, gastos fijos, cierre de mes, exportar/importar. Los destinos ya no se gestionan en la interfaz
 
 ## 5. Android
 - [x] 5.1 Configuración de Capacitor y plataforma android

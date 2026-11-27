@@ -1,9 +1,7 @@
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import PaymentsIcon from '@mui/icons-material/Payments';
-import RepeatIcon from '@mui/icons-material/Repeat';
 import { Alert, Box, Button, Chip, Stack, Typography } from '@mui/material';
-import { useState, type ReactElement } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BalanceChart } from '../components/BalanceChart';
 import { Money } from '../components/Money';
@@ -12,24 +10,12 @@ import { allowance, available, destinationBalance } from '../domain/balances';
 import { isBackupDue } from '../domain/backupReminder';
 import { nextMonthToClose } from '../domain/closing';
 import { monthOf } from '../domain/dates';
+import { payrollReceived } from '../domain/payrollSplit';
 import { formatEuros } from '../domain/money';
 import { availableByDay, dailyPace, daysLeftInMonth, spendingByCategory } from '../domain/pace';
 import { monthlySavings } from '../domain/savings';
 import { useRootData } from './root';
 import { CategoryBadge, Ledger, categoryName, categoryStyle, monthLabel } from './shared';
-
-const QUICK_ACTIONS: { to: string; label: string; icon: ReactElement }[] = [
-  { to: '/add?kind=expense', label: 'Gasto', icon: <ArrowUpwardIcon /> },
-  { to: '/add?kind=income', label: 'Ingreso', icon: <ArrowDownwardIcon /> },
-  { to: '/payroll', label: 'Nómina', icon: <PaymentsIcon /> },
-  { to: '/recurring', label: 'Fijos', icon: <RepeatIcon /> },
-];
-
-const ACCOUNT_GRADIENTS = [
-  'linear-gradient(135deg, #3B55F0 0%, #7A5CFA 100%)',
-  'linear-gradient(135deg, #0E9F6E 0%, #0A6E8A 100%)',
-  'linear-gradient(135deg, #F5A524 0%, #E5484D 100%)',
-];
 
 export const HomeScreen = () => {
   const { data, today } = useRootData();
@@ -43,8 +29,12 @@ export const HomeScreen = () => {
   const pace = dailyPace(left, today);
   const daysLeft = daysLeftInMonth(today);
   const toClose = nextMonthToClose(firstMonthWithActivity(data), data.closings, today);
-  const backupDue = isBackupDue(data.lastExportAt, today, data.transactions.length > 0);
-  const accounts = data.destinations.filter((destination) => !destination.archived);
+  const firstActivity = data.transactions.map((tx) => tx.date).sort()[0];
+  const backupDue = isBackupDue(data.lastExportAt, firstActivity, today);
+  const savings = data.destinations
+    .filter((destination) => destination.kind === 'SAVINGS' && !destination.archived)
+    .reduce((sum, destination) => sum + destinationBalance(destination, data.transactions), 0);
+  const payrollPending = !payrollReceived(data.transactions, month);
   const savedThisMonth = monthlySavings(month, data.destinations, data.transactions);
   const byCategory = spendingByCategory(month, data.transactions).slice(0, 6);
   const totalSpent = byCategory.reduce((sum, item) => sum + item.cents, 0);
@@ -59,7 +49,7 @@ export const HomeScreen = () => {
       ) : null}
       {backupDue ? (
         <Alert severity="info" action={<Button component={Link} to="/settings" color="inherit">Exportar</Button>}>
-          Tus datos solo están en este móvil. Guarda una copia de seguridad.
+          Si borras la app, pierdes tus datos. Exporta una copia.
         </Alert>
       ) : null}
 
@@ -75,6 +65,11 @@ export const HomeScreen = () => {
             sx={{ color: 'info.main', bgcolor: 'color-mix(in srgb, var(--mui-palette-info-main) 16%, transparent)' }}
           />
         </Stack>
+        {payrollPending ? (
+          <Button component={Link} to="/payroll" viewTransition variant="outlined" color="inherit" startIcon={<PaymentsIcon />} sx={{ mt: 2, borderColor: 'divider' }}>
+            Ha llegado la nómina
+          </Button>
+        ) : null}
         <Box sx={{ mt: 2.5 }}>
           <BalanceChart
             values={series.slice(0, todayIndex + 1)}
@@ -86,51 +81,29 @@ export const HomeScreen = () => {
         </Box>
       </Box>
 
-      <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
-        {QUICK_ACTIONS.map((action) => (
-          <Stack key={action.label} component={Link} to={action.to} viewTransition sx={{ alignItems: 'center', gap: 0.75, textDecoration: 'none', color: 'text.primary', width: 72 }}>
-            <Box sx={{ width: 56, height: 56, borderRadius: '50%', display: 'grid', placeItems: 'center', bgcolor: 'action.hover', color: 'primary.main' }}>
-              {action.icon}
-            </Box>
-            <Typography sx={{ fontSize: 13, fontWeight: 700 }}>{action.label}</Typography>
-          </Stack>
-        ))}
-      </Stack>
-
-      <Box
-        sx={{
-          display: 'flex',
-          gap: 1.5,
-          overflowX: 'auto',
-          scrollSnapType: 'x mandatory',
-          mx: { xs: -2, sm: -3 },
-          px: { xs: 2, sm: 3 },
-          scrollbarWidth: 'none',
-          '&::-webkit-scrollbar': { display: 'none' },
-        }}
-      >
-        {accounts.map((account, index) => (
-          <Box
-            key={account.id}
-            sx={{
-              flex: '0 0 72%',
-              maxWidth: 280,
-              minHeight: 124,
-              scrollSnapAlign: 'start',
-              p: 2.5,
-              borderRadius: '24px',
-              color: '#fff',
-              background: ACCOUNT_GRADIENTS[index % ACCOUNT_GRADIENTS.length],
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-            }}
-          >
-            <Typography sx={{ fontWeight: 700, opacity: 0.85 }}>{account.name}</Typography>
-            <Money cents={destinationBalance(account, data.transactions)} size="1.9rem" />
+      {savings > 0 ? (
+        <Box
+          component={Link}
+          to="/history"
+          viewTransition
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            p: 2.5,
+            borderRadius: '24px',
+            color: '#fff',
+            textDecoration: 'none',
+            background: 'linear-gradient(135deg, #0E9F6E 0%, #0A6E8A 100%)',
+          }}
+        >
+          <Box>
+            <Typography sx={{ fontWeight: 700, opacity: 0.85 }}>Ahorrado</Typography>
+            <Money cents={savings} size="1.9rem" />
           </Box>
-        ))}
-      </Box>
+          <ChevronRightIcon />
+        </Box>
+      ) : null}
 
       {byCategory.length > 0 ? (
         <Box>
@@ -168,14 +141,7 @@ export const HomeScreen = () => {
           ) : null}
         </Stack>
         {recent.length === 0 ? (
-          <Stack spacing={2} sx={{ alignItems: 'flex-start' }}>
-            <Typography sx={{ color: 'text.secondary' }}>
-              Todavía no hay movimientos. Apunta tu nómina para ver cuánto puedes gastar cada día.
-            </Typography>
-            <Button component={Link} to="/payroll" variant="contained">
-              Ha llegado la nómina
-            </Button>
-          </Stack>
+          <Typography sx={{ color: 'text.secondary' }}>Todavía no hay movimientos. Registra tu nómina o apunta un gasto con el botón +.</Typography>
         ) : (
           <Ledger data={data} transactions={recent} today={today} />
         )}

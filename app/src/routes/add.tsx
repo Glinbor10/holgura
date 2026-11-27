@@ -43,13 +43,12 @@ export const AddScreen = () => {
   const { data, today } = useRootData();
   const result = useActionData() as { error?: string } | undefined;
   const [params] = useSearchParams();
-  const destinations = data.destinations.filter((destination) => !destination.archived);
+  const spendingId = data.destinations.find((destination) => destination.kind === 'SPENDING')?.id ?? '';
   const categories = data.categories.filter((category) => !category.archived);
   const initialKind = params.get('kind');
   const [kind, setKind] = useState<Kind>(isKind(initialKind) ? initialKind : 'expense');
   const [amountText, setAmountText] = useState('');
   const [categoryId, setCategoryId] = useState(categories[0]?.id ?? '');
-  const [destinationId, setDestinationId] = useState(destinations.find((d) => d.kind === 'SPENDING')?.id ?? '');
   const [showDetails, setShowDetails] = useState(false);
 
   const amount = parseEuros(amountText);
@@ -78,7 +77,7 @@ export const AddScreen = () => {
         <input type="hidden" name="kind" value={kind} />
         <input type="hidden" name="amount" value={amountText} />
         <input type="hidden" name="categoryId" value={categoryId} />
-        <input type="hidden" name="destinationId" value={destinationId} />
+        <input type="hidden" name="destinationId" value={spendingId} />
 
         {result?.error ? <Alert severity="error">{result.error}</Alert> : null}
 
@@ -86,22 +85,6 @@ export const AddScreen = () => {
 
         {kind === 'expense' ? (
           <CategoryPicker categories={categories} value={categoryId} onChange={setCategoryId} />
-        ) : null}
-
-        {kind === 'income' ? (
-          <Stack direction="row" sx={{ gap: 1, flexWrap: 'wrap' }}>
-            {destinations.map((destination) => (
-              <Button
-                key={destination.id}
-                onClick={() => setDestinationId(destination.id)}
-                variant={destination.id === destinationId ? 'contained' : 'outlined'}
-                color={destination.id === destinationId ? 'primary' : 'inherit'}
-                sx={{ borderColor: 'divider' }}
-              >
-                {destination.name}
-              </Button>
-            ))}
-          </Stack>
         ) : null}
 
         <Box>

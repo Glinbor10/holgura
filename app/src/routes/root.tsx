@@ -1,11 +1,10 @@
 import AddIcon from '@mui/icons-material/Add';
-import BarChartIcon from '@mui/icons-material/BarChart';
 import HomeIcon from '@mui/icons-material/Home';
 import ListAltIcon from '@mui/icons-material/ListAlt';
-import SettingsIcon from '@mui/icons-material/Settings';
 import { Box, Container, Typography } from '@mui/material';
 import type { ReactElement } from 'react';
 import { Link, Outlet, useLocation, useRouteLoaderData } from 'react-router-dom';
+import { SettingsBrushIcon } from '../components/SettingsBrushIcon';
 import type { AppData } from '../data/appData';
 import { generateRecurring } from '../data/mutations';
 import { loadData, mutate } from '../data/store';
@@ -29,17 +28,16 @@ export const useRootData = (): RootData => useRouteLoaderData('root') as RootDat
 
 interface Tab {
   path: string;
+  /** Other screens that belong to this tab and keep it highlighted. */
+  also?: string[];
   label: string;
   icon: ReactElement;
 }
 
-const LEFT_TABS: Tab[] = [
-  { path: '/', label: 'Inicio', icon: <HomeIcon /> },
-  { path: '/movements', label: 'Movimientos', icon: <ListAltIcon /> },
-];
+const LEFT_TABS: Tab[] = [{ path: '/', also: ['/history'], label: 'Inicio', icon: <HomeIcon /> }];
 const RIGHT_TABS: Tab[] = [
-  { path: '/history', label: 'Ahorro', icon: <BarChartIcon /> },
-  { path: '/settings', label: 'Ajustes', icon: <SettingsIcon /> },
+  { path: '/movements', label: 'Movimientos', icon: <ListAltIcon /> },
+  { path: '/settings', also: ['/recurring', '/close'], label: 'Configuración', icon: <SettingsBrushIcon /> },
 ];
 
 const DockTab = ({ tab, active }: { tab: Tab; active: boolean }) => (
@@ -87,7 +85,7 @@ export const Layout = () => {
             maxWidth: 520,
             height: 68,
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr 76px 1fr 1fr',
+            gridTemplateColumns: '1fr 76px 1fr 1fr',
             alignItems: 'stretch',
             borderRadius: '28px',
             border: 1,
@@ -99,7 +97,7 @@ export const Layout = () => {
           }}
         >
           {LEFT_TABS.map((tab) => (
-            <DockTab key={tab.path} tab={tab} active={pathname === tab.path} />
+            <DockTab key={tab.path} tab={tab} active={pathname === tab.path || (tab.also ?? []).includes(pathname)} />
           ))}
           <Box sx={{ display: 'grid', placeItems: 'center' }}>
             <Box
@@ -125,7 +123,7 @@ export const Layout = () => {
             </Box>
           </Box>
           {RIGHT_TABS.map((tab) => (
-            <DockTab key={tab.path} tab={tab} active={pathname === tab.path} />
+            <DockTab key={tab.path} tab={tab} active={pathname === tab.path || (tab.also ?? []).includes(pathname)} />
           ))}
         </Box>
       )}

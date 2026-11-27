@@ -29,6 +29,11 @@ arranque sin el permiso `INTERNET`, y los márgenes de la barra de estado y el t
 - Permiso `INTERNET` quitado: si la app no abre en el móvil, hay que devolverlo.
 - El README es solo para visitantes (qué hace, capturas, descargar el APK). Lo de mantenimiento va en `docs/`.
 - La nómina es una pantalla propia, no un tipo de movimiento de Añadir: el `+` solo ofrece Gasto e Ingreso.
+- La interfaz no habla de "destinos": por dentro hay un bolsillo de gastos y uno de ahorro, pero el usuario solo ve
+  "Disponible", "Ahorrado" y, en Configuración, "Apartar para ahorro" de cada nómina. No reabras la gestión de destinos.
+- Barra inferior: Inicio, `+`, Movimientos y Configuración (icono de engranaje con pincel). El ahorro es una tarjeta
+  en Inicio; Gastos fijos y Cierre de mes viven en Configuración.
+- El aviso de copia solo sale si pasan más de 30 días sin exportar (o desde el primer movimiento).
 - Tras la v0.1, lo primero es importar el CSV del banco; la versión web para iPhone viene después del APK.
 
 ## Prioridades del usuario
