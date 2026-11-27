@@ -23,7 +23,7 @@ la interfaz, y por eso se prueban fácilmente.
 
 | Carpeta | Contenido |
 |---|---|
-| [`app/`](../app/README.md) | Código de la app |
+| `app/` | Código de la app |
 | [`openspec/`](../openspec/changes/v0-1-mvp/proposal.md) | Especificación del producto, diseño técnico y tareas |
 | [`docs/`](SIGNING.md) | Firma del APK y capturas de pantalla |
 | `.github/workflows/` | CI de las pull requests y publicación de versiones con su APK |
