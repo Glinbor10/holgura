@@ -70,6 +70,7 @@ El cálculo se basa en dos ideas: a qué mes corresponde cada ingreso y qué par
 - **Mes que financia.** Cada nómina indica el mes que cubre. Una nómina cobrada a final de mes financia, por defecto, el mes siguiente.
 - **Dinero disponible.** Es la parte de los ingresos destinada a gastos en el mes, más el remanente arrastrado del mes anterior, menos los gastos ya registrados.
 - **Ahorro.** El importe ahorrado es la suma de:
+  - el ahorro de partida, que el usuario indica una sola vez si ya disponía de ahorros al empezar;
   - la cantidad apartada para ahorro en cada nómina;
   - los sobrantes que el usuario decide traspasar al ahorro al cerrar un mes;
   - menos los importes que se utilizan del ahorro para cubrir un déficit.
