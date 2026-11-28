@@ -3,11 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#2e7d32" />
+    <meta name="theme-color" content="#07070A" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#F3F4F8" media="(prefers-color-scheme: light)" />
+    <style>
+      html, body { margin: 0; background: #07070A; }
+      @media (prefers-color-scheme: light) { html, body { background: #F3F4F8; } }
+      .boot { min-height: 100dvh; display: grid; place-items: center; }
+      .boot svg { width: 96px; height: 96px; animation: boot-pulse 1.4s ease-in-out infinite; }
+      @keyframes boot-pulse { 0%, 100% { opacity: 0.55; transform: scale(0.95); } 50% { opacity: 1; transform: scale(1); } }
+      @media (prefers-reduced-motion: reduce) { .boot svg { animation: none; } }
+    </style>
     <title>Holgura</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="boot" role="status" aria-label="Cargando Holgura">
+        <svg viewBox="0 1 108 108" aria-hidden="true"><defs>
+    <linearGradient id="boot-b" x1="22" y1="90" x2="54" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#3B55F0"/><stop offset="1" stop-color="#A08BFF"/></linearGradient>
+    <linearGradient id="boot-a" x1="54" y1="90" x2="86" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#E5922A"/><stop offset="1" stop-color="#FFD27A"/></linearGradient>
+    <clipPath id="boot-c"><path d="M54 20L86 32V54C86 72 72 84 54 90C36 84 22 72 22 54V32Z"/></clipPath>
+  </defs>
+  <g clip-path="url(#boot-c)">
+    <rect width="108" height="108" fill="url(#boot-a)"/>
+    <path d="M0 0H54V31A12 12 0 0 0 54 55A12 12 0 0 1 54 79V120H0Z" fill="url(#boot-b)"/>
+    <path d="M54 20V31A12 12 0 0 0 54 55A12 12 0 0 1 54 79V90" fill="none" stroke="#14142B" stroke-width="6" stroke-linecap="butt" stroke-linejoin="round"/>
+    <path d="M54 14V96" fill="none" stroke="#14142B" stroke-width="6" stroke-linecap="butt" stroke-linejoin="round"/>
+  </g>
+  <path d="M65.54 39.69A12 12 0 1 0 54 55A12 12 0 1 1 42.46 63.69" fill="none" stroke="#14142B" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
