@@ -1,11 +1,12 @@
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import PaymentsIcon from '@mui/icons-material/Payments';
 import { Alert, Box, Button, Chip, Stack, Typography } from '@mui/material';
-import { useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { BalanceChart } from '../components/BalanceChart';
 import { Money } from '../components/Money';
 import { firstMonthWithActivity } from '../data/mutations';
+import { firstTransactionDate, latestTransactions } from '../domain/activity';
 import { allowance, available, destinationBalance } from '../domain/balances';
 import { isBackupDue } from '../domain/backupReminder';
 import { nextMonthToClose } from '../domain/closing';
@@ -17,20 +18,48 @@ import { monthlySavings } from '../domain/savings';
 import { useRootData } from './root';
 import { CategoryBadge, Ledger, categoryName, categoryStyle, monthLabel } from './shared';
 
+interface BalanceProps {
+  monthName: string;
+  left: number;
+  budget: number;
+  series: number[];
+  todayIndex: number;
+  children: ReactNode;
+}
+
+/**
+ * The big amount and its chart. The finger-scrub state lives here, so dragging over the chart only re-renders
+ * this component and not the whole home screen with its numbers over every movement.
+ */
+const Balance = ({ monthName, left, budget, series, todayIndex, children }: BalanceProps) => {
+  const [scrub, setScrub] = useState<number | null>(null);
+  const shown = scrub === null ? left : series[scrub];
+  const values = useMemo(() => series.slice(0, todayIndex + 1), [series, todayIndex]);
+  return (
+    <Box>
+      <Typography sx={{ color: 'text.secondary', fontWeight: 700, minHeight: 24 }}>
+        {scrub === null ? `Disponible en ${monthName}` : `Día ${scrub + 1} de ${monthName}`}
+      </Typography>
+      <Money cents={shown} size="clamp(2.9rem, 16vw, 4rem)" color={shown < 0 ? 'var(--mui-palette-error-main)' : undefined} />
+      {children}
+      <Box sx={{ mt: 2.5 }}>
+        <BalanceChart values={values} totalDays={series.length} startCents={budget} activeIndex={scrub} onScrub={setScrub} />
+      </Box>
+    </Box>
+  );
+};
+
 export const HomeScreen = () => {
   const { data, today } = useRootData();
-  const [scrub, setScrub] = useState<number | null>(null);
   const month = monthOf(today);
   const left = available(month, data.destinations, data.transactions, data.closings);
   const budget = allowance(month, data.destinations, data.transactions, data.closings);
   const todayIndex = Number(today.slice(8)) - 1;
   const series = availableByDay(month, budget, data.transactions);
-  const shown = scrub === null ? left : series[scrub];
   const pace = dailyPace(left, today);
   const daysLeft = daysLeftInMonth(today);
   const toClose = nextMonthToClose(firstMonthWithActivity(data), data.closings, today);
-  const firstActivity = data.transactions.map((tx) => tx.date).sort()[0];
-  const backupDue = isBackupDue(data.lastExportAt, firstActivity, today);
+  const backupDue = isBackupDue(data.lastExportAt, firstTransactionDate(data.transactions), today);
   const savings = data.destinations
     .filter((destination) => destination.kind === 'SAVINGS' && !destination.archived)
     .reduce((sum, destination) => sum + destinationBalance(destination, data.transactions), 0);
@@ -38,7 +67,7 @@ export const HomeScreen = () => {
   const savedThisMonth = monthlySavings(month, data.destinations, data.transactions);
   const byCategory = spendingByCategory(month, data.transactions).slice(0, 6);
   const totalSpent = byCategory.reduce((sum, item) => sum + item.cents, 0);
-  const recent = [...data.transactions].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
+  const recent = latestTransactions(data.transactions, 5);
 
   return (
     <Stack spacing={3.5}>
@@ -53,11 +82,7 @@ export const HomeScreen = () => {
         </Alert>
       ) : null}
 
-      <Box>
-        <Typography sx={{ color: 'text.secondary', fontWeight: 700, minHeight: 24 }}>
-          {scrub === null ? `Disponible en ${monthLabel(month).split(' ')[0].toLowerCase()}` : `Día ${scrub + 1} de ${monthLabel(month).split(' ')[0].toLowerCase()}`}
-        </Typography>
-        <Money cents={shown} size="clamp(2.9rem, 16vw, 4rem)" color={shown < 0 ? 'var(--mui-palette-error-main)' : undefined} />
+      <Balance monthName={monthLabel(month).split(' ')[0].toLowerCase()} left={left} budget={budget} series={series} todayIndex={todayIndex}>
         <Stack direction="row" sx={{ gap: 1, mt: 1.5, flexWrap: 'wrap', minHeight: 32 }}>
           <Chip label={left > 0 ? `${formatEuros(pace)} al día, ${daysLeft} ${daysLeft === 1 ? 'día' : 'días'}` : 'Presupuesto agotado'} />
           <Chip
@@ -74,16 +99,7 @@ export const HomeScreen = () => {
             Ha llegado la nómina
           </Button>
         ) : null}
-        <Box sx={{ mt: 2.5 }}>
-          <BalanceChart
-            values={series.slice(0, todayIndex + 1)}
-            totalDays={series.length}
-            startCents={budget}
-            activeIndex={scrub}
-            onScrub={setScrub}
-          />
-        </Box>
-      </Box>
+      </Balance>
 
       {savings > 0 ? (
         <Box

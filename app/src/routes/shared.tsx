@@ -31,7 +31,7 @@ export const describeTransaction = (data: AppData, tx: Transaction): string => {
 
 export const signedAmount = (tx: Transaction): number => (tx.type === 'EXPENSE' ? -tx.amountCents : tx.amountCents);
 
-export const byDateDesc = (a: Transaction, b: Transaction): number => b.date.localeCompare(a.date);
+export const byDateDesc = (a: Transaction, b: Transaction): number => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0);
 
 const capitalize = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
 const toDate = (iso: IsoDate): Date => new Date(Number(iso.slice(0, 4)), Number(iso.slice(5, 7)) - 1, Number(iso.slice(8, 10)));
