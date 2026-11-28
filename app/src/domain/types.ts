@@ -41,6 +41,8 @@ export interface Transaction {
   /** TRANSFER only. */
   fromDestinationId?: string;
   toDestinationId?: string;
+  /** INCOME registered by the "payroll arrived" screen. The note is only a label, so editing it does not change this. */
+  isPayroll?: boolean;
   /** EXPENSE generated from a recurring expense. */
   recurringId?: string;
 }

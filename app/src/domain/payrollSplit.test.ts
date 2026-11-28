@@ -54,6 +54,16 @@ describe('payrollReceived', () => {
     expect(payrollReceived([payroll], '2026-11')).toBe(true);
   });
 
+  it('recognizes a payroll by its own flag, even if the user edits or clears the note', () => {
+    const flagged = { id: 'b', type: 'INCOME' as const, date: '2026-11-28', amountCents: 100000, isPayroll: true, note: 'Nómina de noviembre' };
+    expect(payrollReceived([flagged], '2026-11')).toBe(true);
+    expect(payrollReceived([{ ...flagged, note: undefined }], '2026-11')).toBe(true);
+  });
+
+  it('does not count an income as payroll just because the flag is absent and the note differs', () => {
+    expect(payrollReceived([{ id: 'c', type: 'INCOME' as const, date: '2026-11-28', amountCents: 5000, note: 'Venta' }], '2026-11')).toBe(false);
+  });
+
   it('ignores payrolls from other months and incomes that are not a payroll', () => {
     expect(payrollReceived([payroll], '2026-12')).toBe(false);
     expect(payrollReceived([{ ...payroll, note: 'Venta' }], '2026-11')).toBe(false);

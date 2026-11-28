@@ -25,7 +25,7 @@ export const payrollAction = async ({ request }: ActionFunctionArgs) => {
       if (!split.ok) {
         throw new Error('FIXED_LINES_EXCEED_AMOUNT');
       }
-      return addIncome(data, { date: todayIso(), allocations: split.allocations, fundsMonth: String(form.get('fundsMonth')), note: PAYROLL_NOTE });
+      return addIncome(data, { date: todayIso(), allocations: split.allocations, fundsMonth: String(form.get('fundsMonth')), note: PAYROLL_NOTE, isPayroll: true });
     });
   } catch (error) {
     return { error: errorMessage(error) };

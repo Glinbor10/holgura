@@ -1,7 +1,7 @@
 import { monthOf, nextMonth } from './dates';
 import type { Allocation, Cents, IsoDate, Month, PayrollTemplate, Transaction } from './types';
 
-/** Note stored on the income created by the "payroll arrived" screen. */
+/** Label of the income created by the "payroll arrived" screen. Older payrolls were recognized by it alone. */
 export const PAYROLL_NOTE = 'Nómina';
 
 export type SplitResult = { ok: true; allocations: Allocation[] } | { ok: false; error: 'FIXED_LINES_EXCEED_AMOUNT' };
@@ -26,4 +26,4 @@ export const defaultFundsMonth = (date: IsoDate, fundsNextMonth: boolean): Month
 
 /** True if a payroll was already registered on a date of the given month. */
 export const payrollReceived = (transactions: Transaction[], month: Month): boolean =>
-  transactions.some((tx) => tx.type === 'INCOME' && tx.note === PAYROLL_NOTE && monthOf(tx.date) === month);
+  transactions.some((tx) => tx.type === 'INCOME' && (tx.isPayroll === true || tx.note === PAYROLL_NOTE) && monthOf(tx.date) === month);

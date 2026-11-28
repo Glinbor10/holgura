@@ -38,7 +38,7 @@ export const addExpense = (
 
 export const addIncome = (
   data: AppData,
-  input: { date: IsoDate; allocations: Allocation[]; fundsMonth: Month; note?: string },
+  input: { date: IsoDate; allocations: Allocation[]; fundsMonth: Month; note?: string; isPayroll?: boolean },
 ): AppData =>
   withTransaction(data, {
     id: newId(),
@@ -48,6 +48,7 @@ export const addIncome = (
     allocations: input.allocations,
     fundsMonth: input.fundsMonth,
     note: input.note,
+    ...(input.isPayroll ? { isPayroll: true } : {}),
   });
 
 export const updateTransaction = (data: AppData, id: string, patch: Partial<Transaction>): AppData => {
