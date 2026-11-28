@@ -10,6 +10,7 @@ export const theme = createTheme({
       palette: {
         primary: { main: '#3B55F0', contrastText: '#FFFFFF' },
         secondary: { main: '#F5A524' },
+        savings: { main: '#B7791F', light: '#FFD27A', dark: '#E5922A', contrastText: '#14142B' },
         success: { main: '#0E9F6E' },
         info: { main: '#7A5CFA' },
         error: { main: '#E5484D' },
@@ -23,6 +24,7 @@ export const theme = createTheme({
       palette: {
         primary: { main: '#6F86FF', contrastText: '#05060F' },
         secondary: { main: '#F5B14A' },
+        savings: { main: '#F5B14A', light: '#FFD27A', dark: '#E5922A', contrastText: '#14142B' },
         success: { main: '#2FD399' },
         info: { main: '#A692FF' },
         error: { main: '#FF6B6F' },

@@ -60,11 +60,7 @@ export const shortMonth = (month: Month): string =>
 export const AmountText = ({ cents, plus = false, positive = 'income' }: { cents: number; plus?: boolean; positive?: 'income' | 'savings' }) => (
   <Typography
     component="span"
-    sx={(theme) => ({
-      fontWeight: 800,
-      color: cents < 0 ? 'text.primary' : plus && cents > 0 ? (positive === 'savings' ? 'secondary.main' : 'success.main') : 'text.primary',
-      ...(positive === 'savings' && plus && cents > 0 ? theme.applyStyles('light', { color: theme.palette.secondary.dark }) : {}),
-    })}
+    sx={{ fontWeight: 800, color: plus && cents > 0 ? (positive === 'savings' ? 'savings.main' : 'success.main') : 'text.primary' }}
   >
     {plus && cents > 0 ? '+' : ''}
     {formatEuros(cents)}
