@@ -1,3 +1,4 @@
+import { firstTransactionDate } from '../domain/activity';
 import { available, destinationBalance } from '../domain/balances';
 import { buildClosing, canClose, canReopen } from '../domain/closing';
 import { monthOf } from '../domain/dates';
@@ -120,8 +121,7 @@ export const deleteRecurring = (data: AppData, id: string): AppData => ({
   recurring: data.recurring.filter((item) => item.id !== id),
 });
 
-export const firstMonthWithActivity = (data: AppData): Month | undefined =>
-  data.transactions.map((tx) => monthOf(tx.date)).sort()[0];
+export const firstMonthWithActivity = (data: AppData): Month | undefined => firstTransactionDate(data.transactions)?.slice(0, 7);
 
 export const closeMonth = (data: AppData, month: Month, action: ClosingAction, today: IsoDate): AppData => {
   const firstMonth = firstMonthWithActivity(data);
