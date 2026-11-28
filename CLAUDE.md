@@ -35,8 +35,15 @@ arranque sin el permiso `INTERNET`, y los márgenes de la barra de estado y el t
   dentro, al final. El `+` abre un menú animado con Gasto (borde rojo) e Ingreso (borde verde); la pantalla de añadir
   recibe el tipo por la URL (`?kind=`) y no tiene selector. El ahorro es una tarjeta en Inicio; Gastos fijos y Cierre
   de mes viven en Configuración.
-- Colores con significado: **dorado** = ahorro (tarjeta Ahorrado, chip, histórico; es `secondary` del tema), **azul-violeta** =
+- Colores con significado: **dorado** = ahorro (tarjeta Ahorrado, chip, histórico; es el color `savings` del tema: `main` para texto, `light`/`dark` para degradados), **azul-violeta** =
   dinero disponible e interfaz, **verde** = ingreso, **rojo** = gasto (menú del `+`, gráficas de fondo y sus símbolos).
+- Una nómina se reconoce por `isPayroll` en el movimiento, no por el texto de la nota (que el usuario puede editar). Las
+  anteriores se siguen reconociendo por la nota "Nómina".
+- Al cambiar de pestaña la pantalla se desliza hacia el lado de la pestaña (view transition; `data-nav` en `<html>` lo
+  anuncia y el CSS está en `index.html`). La barra es su propia capa (`viewTransitionName: dock`) y no se mueve.
+- Para "el destino de gastos/ahorro" usa `spendingDestination`/`savingsDestination` de `data/appData.ts`: la interfaz no
+  gestiona destinos y hay uno de cada.
+- Los números pesados de Inicio se calculan una vez por navegación; el estado del dedo sobre la gráfica vive en `Balance`.
 - El aviso de copia solo sale si pasan más de 30 días sin exportar (o desde el primer movimiento).
 - Tras la v0.1, lo primero es importar el CSV del banco; la versión web para iPhone viene después del APK.
 
