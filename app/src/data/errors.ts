@@ -6,6 +6,7 @@ const MESSAGES: Record<string, string> = {
   CANNOT_ARCHIVE_SPENDING: 'El destino de gastos no se puede archivar.',
   DESTINATION_HAS_BALANCE: 'El destino tiene saldo. Déjalo en 0 antes de archivarlo.',
   SPENDING_GETS_THE_REST: 'El destino de gastos recibe siempre lo que queda de la nómina.',
+  NEGATIVE_AMOUNT: 'El importe no puede ser negativo.',
   MISSING_DESTINATIONS: 'Hacen falta un destino de gastos y uno de ahorro activos.',
 };
 

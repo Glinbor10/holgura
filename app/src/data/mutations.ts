@@ -219,3 +219,14 @@ export const setPayrollLine = (data: AppData, destinationId: string, amountCents
   const lines = amountCents > 0 ? [...others, { destinationId, amountCents }] : others;
   return { ...data, payrollTemplate: { ...data.payrollTemplate, lines } };
 };
+
+/** Sets the savings the user already had when starting to use the app (the savings balance starts from it). */
+export const setStartingSavings = (data: AppData, amountCents: Cents): AppData => {
+  if (amountCents < 0) {
+    throw new Error('NEGATIVE_AMOUNT');
+  }
+  return {
+    ...data,
+    destinations: data.destinations.map((d) => (d.kind === 'SAVINGS' && !d.archived ? { ...d, initialCents: amountCents } : d)),
+  };
+};

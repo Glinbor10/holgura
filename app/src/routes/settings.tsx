@@ -15,6 +15,7 @@ import {
   renameCategory,
   setPayrollLine,
   setPayrollTemplate,
+  setStartingSavings,
 } from '../data/mutations';
 import { mutate, replaceData } from '../data/store';
 import { centsToInput, parseEuros } from '../domain/money';
@@ -41,6 +42,13 @@ export const settingsAction = async ({ request }: ActionFunctionArgs) => {
         return { error: 'Escribe un importe válido para la nómina.' };
       }
       await mutate((data) => setPayrollTemplate(data, { ...data.payrollTemplate, amountCents }));
+    } else if (intent === 'savings-start') {
+      const text = String(form.get('amount') ?? '').trim();
+      const amountCents = text === '' ? 0 : parseEuros(text);
+      if (amountCents === null) {
+        return { error: 'Escribe un importe válido para el ahorro.' };
+      }
+      await mutate((data) => setStartingSavings(data, amountCents));
     } else if (intent === 'payroll-funds-next') {
       await mutate((data) => setPayrollTemplate(data, { ...data.payrollTemplate, fundsNextMonth: form.get('value') === 'true' }));
     } else if (intent === 'destination-payroll') {
@@ -111,7 +119,9 @@ export const SettingsScreen = () => {
   const fetcher = useFetcher<{ error?: string }>();
   const revalidator = useRevalidator();
   const [backupMessage, setBackupMessage] = useState<{ severity: 'success' | 'error'; text: string } | null>(null);
-  const savingsId = data.destinations.find((destination) => destination.kind === 'SAVINGS' && !destination.archived)?.id;
+  const savingsDestination = data.destinations.find((destination) => destination.kind === 'SAVINGS' && !destination.archived);
+  const savingsId = savingsDestination?.id;
+  const startingSavings = savingsDestination?.initialCents ?? 0;
   const categories = data.categories.filter((category) => !category.archived);
 
   const submit = (values: Record<string, string>) => fetcher.submit(values, { method: 'post' });
@@ -213,6 +223,28 @@ export const SettingsScreen = () => {
               checked={data.payrollTemplate.fundsNextMonth}
               onChange={(event) => submit({ intent: 'payroll-funds-next', value: String(event.target.checked) })}
               slotProps={{ input: { 'aria-label': 'Financia el mes siguiente' } }}
+            />
+          </GroupRow>
+        </Group>
+      </Box>
+
+      <Box>
+        <Typography variant="h6">Tu ahorro</Typography>
+        <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>El dinero que ya tenías ahorrado antes de empezar a usar Holgura.</Typography>
+        <Group>
+          <GroupRow>
+            <Box sx={{ flex: 1 }}>
+              <Typography sx={{ fontWeight: 700 }}>Ahorro de partida</Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                Se suma a lo que vayas ahorrando
+              </Typography>
+            </Box>
+            <AmountField
+              key={startingSavings}
+              label="Ahorro de partida"
+              cents={startingSavings}
+              placeholder="0"
+              onCommit={(amount) => submit({ intent: 'savings-start', amount })}
             />
           </GroupRow>
         </Group>

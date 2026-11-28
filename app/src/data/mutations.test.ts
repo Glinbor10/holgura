@@ -10,6 +10,7 @@ import {
   generateRecurring,
   reopenMonth,
   setPayrollLine,
+  setStartingSavings,
 } from './mutations';
 import { available, destinationBalance } from '../domain/balances';
 
@@ -125,5 +126,29 @@ describe('payroll amount per destination', () => {
 
   it('refuses to set a fixed amount on the spending destination, which gets the rest', () => {
     expect(() => setPayrollLine(createInitialData(), SPENDING_ID, 1000)).toThrow('SPENDING_GETS_THE_REST');
+  });
+});
+
+describe('starting savings', () => {
+  const savings = (data: ReturnType<typeof createInitialData>) => data.destinations.find((d) => d.id === SAVINGS_ID)!;
+
+  it('sets the savings the user already had, and the balance includes it', () => {
+    const data = setStartingSavings(createInitialData(), 250000);
+    expect(destinationBalance(savings(data), data.transactions)).toBe(250000);
+  });
+
+  it('adds up with what is saved later and can be changed or cleared', () => {
+    const base = setStartingSavings(createInitialData(), 100000);
+    const withPayroll = addIncome(base, {
+      date: '2026-10-28',
+      allocations: [{ destinationId: SAVINGS_ID, amountCents: 30000 }, { destinationId: SPENDING_ID, amountCents: 150000 }],
+      fundsMonth: '2026-11',
+    });
+    expect(destinationBalance(savings(withPayroll), withPayroll.transactions)).toBe(130000);
+    expect(destinationBalance(savings(setStartingSavings(withPayroll, 0)), withPayroll.transactions)).toBe(30000);
+  });
+
+  it('refuses a negative amount', () => {
+    expect(() => setStartingSavings(createInitialData(), -1)).toThrow('NEGATIVE_AMOUNT');
   });
 });
