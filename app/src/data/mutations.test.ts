@@ -11,11 +11,8 @@ import {
   generateRecurring,
   reopenMonth,
   setPayrollLine,
-<<<<<<< HEAD
   updateRecurring,
-=======
   setStartingSavings,
->>>>>>> origin/main
 } from './mutations';
 import { available, destinationBalance } from '../domain/balances';
 
