@@ -6,10 +6,12 @@ import {
   addIncome,
   archiveDestination,
   closeMonth,
+  deleteRecurring,
   deleteTransaction,
   generateRecurring,
   reopenMonth,
   setPayrollLine,
+  updateRecurring,
 } from './mutations';
 import { available, destinationBalance } from '../domain/balances';
 
@@ -88,6 +90,30 @@ describe('recurring expenses', () => {
     const deleted = deleteTransaction(generated, november.id);
     const reloaded = generateRecurring(deleted, '2026-12-10');
     expect(reloaded.transactions.map((tx) => tx.date)).toEqual(['2026-10-05', '2026-12-05']);
+  });
+
+  it('forgets the deleted occurrences of a recurring expense once the expense itself is deleted', () => {
+    const generated = generateRecurring(withRent(), '2026-12-10');
+    const skipped = deleteTransaction(generated, generated.transactions.find((tx) => tx.date === '2026-11-05')!.id);
+    expect(skipped.skippedRecurring).toEqual(['rent|2026-11']);
+    const afterDelete = generateRecurring(deleteRecurring(skipped, 'rent'), '2026-12-10');
+    expect(afterDelete.skippedRecurring ?? []).toEqual([]);
+  });
+
+  it('forgets skipped months before the new start month when an expense is paused and reactivated', () => {
+    const generated = generateRecurring(withRent(), '2026-12-10');
+    const skipped = deleteTransaction(generated, generated.transactions.find((tx) => tx.date === '2026-10-05')!.id);
+    const paused = updateRecurring(skipped, 'rent', { active: false }, '2026-12-10');
+    const reactivated = updateRecurring(paused, 'rent', { active: true }, '2026-12-10');
+    expect(generateRecurring(reactivated, '2026-12-10').skippedRecurring ?? []).toEqual([]);
+  });
+
+  it('keeps a skip that can still matter, so the deleted month does not come back', () => {
+    const generated = generateRecurring(withRent(), '2026-12-10');
+    const skipped = deleteTransaction(generated, generated.transactions.find((tx) => tx.date === '2026-11-05')!.id);
+    const again = generateRecurring(skipped, '2026-12-10');
+    expect(again.skippedRecurring).toEqual(['rent|2026-11']);
+    expect(again.transactions.map((tx) => tx.date)).toEqual(['2026-10-05', '2026-12-05']);
   });
 
   it('still generates the next month after deleting one occurrence', () => {

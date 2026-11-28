@@ -72,9 +72,15 @@ export const deleteTransaction = (data: AppData, id: string): AppData => {
 
 /** Creates the recurring expenses that are due by `today` and not generated yet. */
 export const generateRecurring = (data: AppData, today: IsoDate): AppData => {
+  const skipped = data.skippedRecurring ?? [];
+  // A skip only matters while its expense exists and the month is not before the expense's start month.
+  const stillMatters = skipped.filter((key) => {
+    const item = data.recurring.find((recurring) => recurring.id === key.slice(0, key.lastIndexOf('|')));
+    return item !== undefined && key.slice(key.lastIndexOf('|') + 1) >= item.startMonth;
+  });
   const generated = new Set([
     ...data.transactions.filter((tx) => tx.recurringId).map((tx) => recurringKey(tx.recurringId!, monthOf(tx.date))),
-    ...(data.skippedRecurring ?? []),
+    ...stillMatters,
   ]);
   const created: Transaction[] = pendingRecurringExpenses(data.recurring, generated, today)
     .filter((item) => !isClosed(data, item.date))
@@ -86,7 +92,10 @@ export const generateRecurring = (data: AppData, today: IsoDate): AppData => {
       categoryId: item.categoryId,
       recurringId: item.recurringId,
     }));
-  return created.length === 0 ? data : { ...data, transactions: [...data.transactions, ...created] };
+  const pruned = stillMatters.length !== skipped.length;
+  return created.length === 0 && !pruned
+    ? data
+    : { ...data, transactions: [...data.transactions, ...created], ...(pruned ? { skippedRecurring: stillMatters } : {}) };
 };
 
 export const addRecurring = (
