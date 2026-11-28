@@ -179,6 +179,21 @@ export const SettingsScreen = () => {
       <Group>
         <LinkRow to="/recurring" title="Gastos fijos" detail="Alquiler, suscripciones y pagos que se repiten" />
         <LinkRow to="/close" title="Cierre de mes" detail="Decide qué pasa con lo que sobra o falta" />
+        <GroupRow>
+          <Box sx={{ flex: 1 }}>
+            <Typography sx={{ fontWeight: 700 }}>Ahorro de partida</Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              Lo que ya tenías ahorrado al empezar
+            </Typography>
+          </Box>
+          <AmountField
+            key={startingSavings}
+            label="Ahorro de partida"
+            cents={startingSavings}
+            placeholder="0"
+            onCommit={(amount) => submit({ intent: 'savings-start', amount })}
+          />
+        </GroupRow>
       </Group>
 
       <Box>
@@ -223,28 +238,6 @@ export const SettingsScreen = () => {
               checked={data.payrollTemplate.fundsNextMonth}
               onChange={(event) => submit({ intent: 'payroll-funds-next', value: String(event.target.checked) })}
               slotProps={{ input: { 'aria-label': 'Financia el mes siguiente' } }}
-            />
-          </GroupRow>
-        </Group>
-      </Box>
-
-      <Box>
-        <Typography variant="h6">Tu ahorro</Typography>
-        <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>El dinero que ya tenías ahorrado antes de empezar a usar Holgura.</Typography>
-        <Group>
-          <GroupRow>
-            <Box sx={{ flex: 1 }}>
-              <Typography sx={{ fontWeight: 700 }}>Ahorro de partida</Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                Se suma a lo que vayas ahorrando
-              </Typography>
-            </Box>
-            <AmountField
-              key={startingSavings}
-              label="Ahorro de partida"
-              cents={startingSavings}
-              placeholder="0"
-              onCommit={(amount) => submit({ intent: 'savings-start', amount })}
             />
           </GroupRow>
         </Group>

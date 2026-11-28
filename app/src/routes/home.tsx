@@ -145,7 +145,16 @@ export const HomeScreen = () => {
           ) : null}
         </Stack>
         {recent.length === 0 ? (
-          <Typography sx={{ color: 'text.secondary' }}>Todavía no hay movimientos. Registra tu nómina o apunta un gasto con el botón +.</Typography>
+          <Stack spacing={1}>
+            <Typography sx={{ color: 'text.secondary' }}>Todavía no hay movimientos. Registra tu nómina o apunta un gasto con el botón +.</Typography>
+            <Typography sx={{ color: 'text.secondary' }}>
+              ¿Ya tienes ahorros? Indícalos en{' '}
+              <Link to="/settings" style={{ color: 'inherit', fontWeight: 700 }}>
+                Configuración
+              </Link>
+              .
+            </Typography>
+          </Stack>
         ) : (
           <Ledger data={data} transactions={recent} today={today} />
         )}
