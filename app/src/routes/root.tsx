@@ -45,31 +45,43 @@ const MENU_ITEMS = [
   { to: '/add?kind=expense', label: 'Gasto', color: 'error.main', line: '2,4 12,12 19,7 31,19 36,15', tip: 'M26 20 33 20 36 13' },
 ];
 
-const DockTab = ({ tab, active }: { tab: Tab; active: boolean }) => (
-  <Box
-    component={Link}
-    to={tab.path}
-    aria-current={active ? 'page' : undefined}
-    sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: 0.25,
-      position: 'relative',
-      zIndex: 1,
-      color: active ? 'primary.main' : 'text.secondary',
-      transition: 'color 260ms',
-      textDecoration: 'none',
-      '& svg': { fontSize: 26, transition: 'transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1)', transform: active ? 'translateY(-1px) scale(1.08)' : 'none' },
-    }}
-  >
-    {tab.icon}
-    <Typography component="span" sx={{ fontSize: 11, fontWeight: 700 }}>
-      {tab.label}
-    </Typography>
-  </Box>
-);
+/** Tells the page-slide CSS in index.html which way to go: tabs are ordered left to right. */
+const announceDirection = (from: number, to: number) => {
+  const root = document.documentElement;
+  root.dataset.nav = to > from ? 'forward' : 'back';
+  window.setTimeout(() => delete root.dataset.nav, 600);
+};
+
+const DockTab = ({ tab, index, activeIndex }: { tab: Tab; index: number; activeIndex: number }) => {
+  const active = index === activeIndex;
+  return (
+    <Box
+      component={Link}
+      to={tab.path}
+      viewTransition
+      onClick={() => announceDirection(activeIndex, index)}
+      aria-current={active ? 'page' : undefined}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 0.25,
+        position: 'relative',
+        zIndex: 1,
+        color: active ? 'primary.main' : 'text.secondary',
+        transition: 'color 260ms',
+        textDecoration: 'none',
+        '& svg': { fontSize: 26, transition: 'transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1)', transform: active ? 'translateY(-1px) scale(1.08)' : 'none' },
+      }}
+    >
+      {tab.icon}
+      <Typography component="span" sx={{ fontSize: 11, fontWeight: 700 }}>
+        {tab.label}
+      </Typography>
+    </Box>
+  );
+};
 
 export const Layout = () => {
   const { pathname } = useLocation();
@@ -85,6 +97,8 @@ export const Layout = () => {
         <Box
           component="nav"
           sx={{
+            // Its own layer in the page transition, so the bar stays put while the screen slides.
+            viewTransitionName: 'dock',
             position: 'fixed',
             left: 0,
             right: 0,
@@ -125,7 +139,7 @@ export const Layout = () => {
               <Box sx={{ height: '100%', borderRadius: '26px', bgcolor: 'color-mix(in srgb, var(--mui-palette-primary-main) 16%, transparent)' }} />
             </Box>
             {TABS.map((tab, index) => (
-              <DockTab key={tab.path} tab={tab} active={index === activeIndex} />
+              <DockTab key={tab.path} tab={tab} index={index} activeIndex={activeIndex} />
             ))}
           </Box>
           <ButtonBase

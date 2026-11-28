@@ -12,6 +12,22 @@
       .boot svg { width: 96px; height: 96px; animation: boot-pulse 1.4s ease-in-out infinite; }
       @keyframes boot-pulse { 0%, 100% { opacity: 0.55; transform: scale(0.95); } 50% { opacity: 1; transform: scale(1); } }
       @media (prefers-reduced-motion: reduce) { .boot svg { animation: none; } }
+
+      /* Switching tabs: the screen slides a little and fades, towards the side of the tab. The bar is not part of it. */
+      @keyframes slide-out-left { to { opacity: 0; transform: translateX(-28px); } }
+      @keyframes slide-in-right { from { opacity: 0; transform: translateX(28px); } }
+      @keyframes slide-out-right { to { opacity: 0; transform: translateX(28px); } }
+      @keyframes slide-in-left { from { opacity: 0; transform: translateX(-28px); } }
+      html[data-nav='forward']::view-transition-old(root) { animation: slide-out-left 200ms ease-in both; }
+      html[data-nav='forward']::view-transition-new(root) { animation: slide-in-right 260ms 40ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+      html[data-nav='back']::view-transition-old(root) { animation: slide-out-right 200ms ease-in both; }
+      html[data-nav='back']::view-transition-new(root) { animation: slide-in-left 260ms 40ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+      ::view-transition-group(dock) { animation: none; }
+      ::view-transition-old(dock) { display: none; }
+      ::view-transition-new(dock) { animation: none; }
+      @media (prefers-reduced-motion: reduce) {
+        ::view-transition-old(root), ::view-transition-new(root) { animation: none !important; }
+      }
     </style>
     <title>Holgura</title>
   </head>
