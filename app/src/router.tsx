@@ -1,5 +1,6 @@
 import { createHashRouter } from 'react-router-dom';
 import { AddScreen, addAction } from './routes/add';
+import { Loading } from './components/Loading';
 import { CloseScreen, closeAction } from './routes/close';
 import { EditScreen, editAction } from './routes/edit';
 import { ErrorScreen } from './routes/error';
@@ -17,6 +18,7 @@ export const router = createHashRouter([
     id: 'root',
     path: '/',
     element: <Layout />,
+    HydrateFallback: Loading,
     errorElement: <ErrorScreen />,
     loader: rootLoader,
     children: [
