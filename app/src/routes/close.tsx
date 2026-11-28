@@ -1,5 +1,5 @@
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Alert, Box, Button, ButtonBase, Stack, Typography } from '@mui/material';
+import { Box, Button, ButtonBase, Stack, Typography } from '@mui/material';
 import { Form, redirect, useActionData, type ActionFunctionArgs } from 'react-router-dom';
 import { Money } from '../components/Money';
 import { PageHeader } from '../components/PageHeader';
@@ -12,7 +12,7 @@ import { nextMonth, todayIso } from '../domain/dates';
 import { formatEuros } from '../domain/money';
 import type { ClosingAction, Month } from '../domain/types';
 import { useRootData } from './root';
-import { monthLabel } from './shared';
+import { ErrorAlert, capitalize, monthName } from './shared';
 
 export const closeAction = async ({ request }: ActionFunctionArgs) => {
   const form = await request.formData();
@@ -29,14 +29,12 @@ export const closeAction = async ({ request }: ActionFunctionArgs) => {
   return redirect('/history');
 };
 
-const monthName = (month: Month): string => monthLabel(month).split(' ')[0].toLowerCase();
-
 /** What each closing choice does, in plain words, so nobody has to guess before confirming. */
 const describeAction = (action: ClosingAction, leftCents: number, month: Month): { title: string; detail: string } => {
   const amount = formatEuros(Math.abs(leftCents));
   const following = monthName(nextMonth(month));
   if (action === 'TO_SAVINGS') {
-    return { title: 'Pasarlo a ahorro', detail: `Mueve ${amount} de Gastos a Ahorro. ${monthLabel(nextMonth(month)).split(' ')[0]} empieza de cero.` };
+    return { title: 'Pasarlo a ahorro', detail: `Mueve ${amount} de Gastos a Ahorro. ${capitalize(following)} empieza de cero.` };
   }
   if (action === 'COVER_FROM_SAVINGS') {
     return { title: 'Cubrirlo con ahorro', detail: `Mueve ${amount} de Ahorro a Gastos para dejar ${monthName(month)} a cero.` };
@@ -57,7 +55,7 @@ export const CloseScreen = () => {
   return (
     <Stack spacing={3}>
       <PageHeader title={month ? `Cerrar ${monthName(month)}` : 'Cierre de mes'} />
-      {result?.error ? <Alert severity="error">{result.error}</Alert> : null}
+      <ErrorAlert message={result?.error} />
 
       {month ? (
         <Form method="post">

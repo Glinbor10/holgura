@@ -9,9 +9,9 @@ import { mutate } from '../data/store';
 import { monthOf, nextMonth, todayIso } from '../domain/dates';
 import { centsToInput, formatEuros, parseEuros } from '../domain/money';
 import { PAYROLL_NOTE, applyTemplate, defaultFundsMonth } from '../domain/payrollSplit';
-import { INSET_BOTTOM, INSET_TOP } from '../insets';
+import { SCREEN_BOTTOM_PADDING, SCREEN_MIN_HEIGHT } from '../insets';
 import { useRootData } from './root';
-import { destinationName, monthLabel } from './shared';
+import { ErrorAlert, destinationName, monthLabel } from './shared';
 
 export const payrollAction = async ({ request }: ActionFunctionArgs) => {
   const form = await request.formData();
@@ -45,7 +45,7 @@ export const PayrollScreen = () => {
 
   return (
     <Form method="post">
-      <Stack spacing={2.5} sx={{ minHeight: `calc(100dvh - 32px - ${INSET_TOP})` }}>
+      <Stack spacing={2.5} sx={{ minHeight: SCREEN_MIN_HEIGHT }}>
         <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography variant="h5" sx={{ fontWeight: 800 }}>
             Ha llegado la nómina
@@ -58,7 +58,7 @@ export const PayrollScreen = () => {
         <input type="hidden" name="amount" value={amountText} />
         <input type="hidden" name="fundsMonth" value={fundsMonth} />
 
-        {result?.error ? <Alert severity="error">{result.error}</Alert> : null}
+        <ErrorAlert message={result?.error} />
 
         <AmountDisplay text={amountText} />
 
@@ -102,7 +102,7 @@ export const PayrollScreen = () => {
 
         <Keypad text={amountText} onChange={setAmountText} />
 
-        <Box sx={{ pb: `calc(8px + ${INSET_BOTTOM})` }}>
+        <Box sx={{ pb: SCREEN_BOTTOM_PADDING }}>
           <Button type="submit" variant="contained" size="large" fullWidth disabled={amount === null || !split.ok}>
             {amount === null ? 'Escribe un importe' : `Registrar ${formatEuros(amount)}`}
           </Button>

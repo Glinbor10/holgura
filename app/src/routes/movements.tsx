@@ -2,7 +2,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import { Alert, Box, IconButton, Stack, Typography } from '@mui/material';
+import { Box, IconButton, Stack, Typography } from '@mui/material';
 import { Link, useFetcher, useSearchParams, type ActionFunctionArgs } from 'react-router-dom';
 import { errorMessage } from '../data/errors';
 import { deleteTransaction } from '../data/mutations';
@@ -10,7 +10,7 @@ import { mutate } from '../data/store';
 import { monthOf, nextMonth, prevMonth } from '../domain/dates';
 import { formatEuros } from '../domain/money';
 import { useRootData } from './root';
-import { Ledger, monthLabel } from './shared';
+import { ErrorAlert, Ledger, monthLabel } from './shared';
 
 export const movementsAction = async ({ request }: ActionFunctionArgs) => {
   const form = await request.formData();
@@ -63,7 +63,7 @@ export const MovementsScreen = () => {
         <Stat label="Gastado" cents={spent} />
         <Stat label="Ingresado" cents={earned} color="var(--mui-palette-success-main)" />
       </Stack>
-      {fetcher.data?.error ? <Alert severity="error">{fetcher.data.error}</Alert> : null}
+      <ErrorAlert message={fetcher.data?.error} />
       {items.length === 0 ? (
         <Typography sx={{ color: 'text.secondary', textAlign: 'center', py: 6 }}>
           No hay movimientos en {monthLabel(month).toLowerCase()}.

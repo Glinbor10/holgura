@@ -7,7 +7,7 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import MovieIcon from '@mui/icons-material/Movie';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
-import { Box, Stack, Typography } from '@mui/material';
+import { Alert, Box, Stack, Typography } from '@mui/material';
 import type { ReactElement, ReactNode } from 'react';
 import type { AppData } from '../data/appData';
 import { formatEuros } from '../domain/money';
@@ -33,7 +33,7 @@ export const signedAmount = (tx: Transaction): number => (tx.type === 'EXPENSE' 
 
 export const byDateDesc = (a: Transaction, b: Transaction): number => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0);
 
-const capitalize = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
+export const capitalize = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
 const toDate = (iso: IsoDate): Date => new Date(Number(iso.slice(0, 4)), Number(iso.slice(5, 7)) - 1, Number(iso.slice(8, 10)));
 
 export const dayLabel = (date: IsoDate, today: IsoDate): string => {
@@ -49,6 +49,9 @@ export const dayLabel = (date: IsoDate, today: IsoDate): string => {
 
 export const monthLabel = (month: Month): string =>
   capitalize(new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(toDate(`${month}-01`)));
+
+/** Lowercase month name, as it reads inside a sentence ("noviembre"). */
+export const monthName = (month: Month): string => monthLabel(month).split(' ')[0].toLowerCase();
 
 export const shortMonth = (month: Month): string =>
   new Intl.DateTimeFormat('es-ES', { month: 'short' }).format(toDate(`${month}-01`)).replace('.', '');
@@ -169,3 +172,6 @@ export const Ledger = ({ data, transactions, today, action }: LedgerProps) => {
     </Stack>
   );
 };
+
+/** The error shown at the top of a screen after a failed action; nothing when there is none. */
+export const ErrorAlert = ({ message }: { message?: string }) => (message ? <Alert severity="error">{message}</Alert> : null);

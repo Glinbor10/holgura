@@ -8,8 +8,9 @@ import { updateTransaction } from '../data/mutations';
 import { mutate } from '../data/store';
 import { centsToInput, parseEuros } from '../domain/money';
 import type { Transaction } from '../domain/types';
-import { INSET_BOTTOM, INSET_TOP } from '../insets';
+import { SCREEN_BOTTOM_PADDING, SCREEN_MIN_HEIGHT } from '../insets';
 import { useRootData } from './root';
+import { ErrorAlert } from './shared';
 
 export const editAction = async ({ request, params }: ActionFunctionArgs) => {
   const form = await request.formData();
@@ -67,7 +68,7 @@ export const EditScreen = () => {
 
   return (
     <Form method="post">
-      <Stack spacing={3} sx={{ minHeight: `calc(100dvh - 32px - ${INSET_TOP})` }}>
+      <Stack spacing={3} sx={{ minHeight: SCREEN_MIN_HEIGHT }}>
         <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography variant="h5">{tx.type === 'EXPENSE' ? 'Editar gasto' : 'Editar ingreso'}</Typography>
           <IconButton aria-label="Cerrar sin guardar" onClick={() => navigate(-1)}>
@@ -75,7 +76,7 @@ export const EditScreen = () => {
           </IconButton>
         </Stack>
 
-        {result?.error ? <Alert severity="error">{result.error}</Alert> : null}
+        <ErrorAlert message={result?.error} />
 
         {amountEditable ? (
           <TextField
@@ -125,7 +126,7 @@ export const EditScreen = () => {
         <TextField name="note" label="Nota (opcional)" defaultValue={tx.note ?? ''} />
 
         <Box sx={{ flex: 1 }} />
-        <Box sx={{ pb: `calc(8px + ${INSET_BOTTOM})` }}>
+        <Box sx={{ pb: SCREEN_BOTTOM_PADDING }}>
           <Button type="submit" variant="contained" size="large" fullWidth>
             Guardar cambios
           </Button>

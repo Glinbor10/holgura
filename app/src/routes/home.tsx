@@ -17,7 +17,7 @@ import { formatEuros } from '../domain/money';
 import { availableByDay, dailyPace, daysLeftInMonth, spendingByCategory } from '../domain/pace';
 import { monthlySavings } from '../domain/savings';
 import { useRootData } from './root';
-import { CategoryBadge, Ledger, categoryName, categoryStyle, monthLabel } from './shared';
+import { CategoryBadge, Ledger, categoryName, categoryStyle, monthLabel, monthName } from './shared';
 
 interface BalanceProps {
   monthName: string;
@@ -82,7 +82,7 @@ export const HomeScreen = () => {
         </Alert>
       ) : null}
 
-      <Balance monthName={monthLabel(month).split(' ')[0].toLowerCase()} left={left} budget={budget} series={series} todayIndex={todayIndex}>
+      <Balance monthName={monthName(month)} left={left} budget={budget} series={series} todayIndex={todayIndex}>
         <Stack direction="row" sx={{ gap: 1, mt: 1.5, flexWrap: 'wrap', minHeight: 32 }}>
           <Chip label={left > 0 ? `${formatEuros(pace)} al día, ${daysLeft} ${daysLeft === 1 ? 'día' : 'días'}` : 'Presupuesto agotado'} />
           <Chip

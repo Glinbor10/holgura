@@ -22,7 +22,7 @@ import { mutate, replaceData } from '../data/store';
 import { centsToInput, parseEuros } from '../domain/money';
 import type { Cents, PayrollTemplate } from '../domain/types';
 import { useRootData } from './root';
-import { CategoryBadge } from './shared';
+import { CategoryBadge, ErrorAlert } from './shared';
 
 export const settingsAction = async ({ request }: ActionFunctionArgs) => {
   const form = await request.formData();
@@ -52,13 +52,13 @@ export const settingsAction = async ({ request }: ActionFunctionArgs) => {
       await mutate((data) => setStartingSavings(data, amountCents));
     } else if (intent === 'payroll-funds-next') {
       await mutate((data) => setPayrollTemplate(data, { ...data.payrollTemplate, fundsNextMonth: form.get('value') === 'true' }));
-    } else if (intent === 'destination-payroll') {
+    } else if (intent === 'savings-payroll') {
       const text = String(form.get('amount') ?? '').trim();
       const amountCents = text === '' ? 0 : parseEuros(text);
       if (amountCents === null) {
-        return { error: 'Escribe un importe válido para el destino.' };
+        return { error: 'Escribe un importe válido para el ahorro.' };
       }
-      await mutate((data) => setPayrollLine(data, id, amountCents));
+      await mutate((data) => setPayrollLine(data, savingsDestination(data)?.id ?? '', amountCents));
     }
   } catch (error) {
     return { error: errorMessage(error) };
@@ -175,7 +175,7 @@ export const SettingsScreen = () => {
   return (
     <Stack spacing={3.5}>
       <Typography variant="h5">Configuración</Typography>
-      {fetcher.data?.error ? <Alert severity="error">{fetcher.data.error}</Alert> : null}
+      <ErrorAlert message={fetcher.data?.error} />
 
       <Group>
         <LinkRow to="/recurring" title="Gastos fijos" detail="Alquiler, suscripciones y pagos que se repiten" />
@@ -224,7 +224,7 @@ export const SettingsScreen = () => {
                 label="Cuánto ahorrar de cada nómina"
                 cents={payrollLineCents(data.payrollTemplate, savingsId)}
                 placeholder="0"
-                onCommit={(amount) => submit({ intent: 'destination-payroll', id: savingsId, amount })}
+                onCommit={(amount) => submit({ intent: 'savings-payroll', amount })}
               />
             </GroupRow>
           )}

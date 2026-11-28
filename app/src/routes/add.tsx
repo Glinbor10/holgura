@@ -1,6 +1,6 @@
 import CloseIcon from '@mui/icons-material/Close';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Alert, Box, Button, Collapse, IconButton, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, Collapse, IconButton, Stack, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import { Form, Link, redirect, useActionData, useSearchParams, type ActionFunctionArgs } from 'react-router-dom';
 import { AmountDisplay, Keypad } from '../components/AmountPad';
@@ -12,8 +12,9 @@ import { addExpense, addIncome } from '../data/mutations';
 import { mutate } from '../data/store';
 import { monthOf } from '../domain/dates';
 import { formatEuros, parseEuros } from '../domain/money';
-import { INSET_BOTTOM, INSET_TOP } from '../insets';
+import { SCREEN_BOTTOM_PADDING, SCREEN_MIN_HEIGHT } from '../insets';
 import { useRootData } from './root';
+import { ErrorAlert } from './shared';
 
 type Kind = 'expense' | 'income';
 
@@ -40,15 +41,12 @@ export const addAction = async ({ request }: ActionFunctionArgs) => {
   return redirect('/');
 };
 
-const isKind = (value: string | null): value is Kind => value === 'expense' || value === 'income';
-
 export const AddScreen = () => {
   const { data, today } = useRootData();
   const result = useActionData() as { error?: string } | undefined;
   const [params] = useSearchParams();
   const categories = data.categories.filter((category) => !category.archived);
-  const initialKind = params.get('kind');
-  const kind: Kind = isKind(initialKind) ? initialKind : 'expense';
+  const kind: Kind = params.get('kind') === 'income' ? 'income' : 'expense';
   const [amountText, setAmountText] = useState('');
   const [categoryId, setCategoryId] = useState(categories[0]?.id ?? '');
   const [showDetails, setShowDetails] = useState(false);
@@ -61,7 +59,7 @@ export const AddScreen = () => {
     <Box sx={{ position: 'relative' }}>
       <TrendBackdrop kind={kind} />
       <Form method="post">
-      <Stack spacing={2.5} sx={{ position: 'relative', minHeight: `calc(100dvh - 32px - ${INSET_TOP})` }}>
+      <Stack spacing={2.5} sx={{ position: 'relative', minHeight: SCREEN_MIN_HEIGHT }}>
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5 }}>
           <Typography variant="h5" sx={{ flex: 1, fontWeight: 800 }}>
             {kind === 'expense' ? 'Nuevo gasto' : 'Nuevo ingreso'}
@@ -75,7 +73,7 @@ export const AddScreen = () => {
         <input type="hidden" name="amount" value={amountText} />
         <input type="hidden" name="categoryId" value={categoryId} />
 
-        {result?.error ? <Alert severity="error">{result.error}</Alert> : null}
+        <ErrorAlert message={result?.error} />
 
         <AmountDisplay text={amountText} />
 
@@ -96,9 +94,9 @@ export const AddScreen = () => {
             <Stack spacing={1.5} sx={{ pt: 1.5 }}>
               <Stack direction="row" spacing={1.5}>
                 <TextField name="date" label="Fecha" type="date" defaultValue={today} required fullWidth slotProps={{ inputLabel: { shrink: true } }} />
-                {kind === 'expense' ? null : (
-                  <TextField key={kind} name="fundsMonth" label="Mes que financia" type="month" defaultValue={fundsMonth} required fullWidth slotProps={{ inputLabel: { shrink: true } }} />
-                )}
+                {kind === 'income' ? (
+                  <TextField name="fundsMonth" label="Mes que financia" type="month" defaultValue={fundsMonth} required fullWidth slotProps={{ inputLabel: { shrink: true } }} />
+                ) : null}
               </Stack>
               <TextField name="note" label="Nota (opcional)" />
             </Stack>
@@ -109,7 +107,7 @@ export const AddScreen = () => {
 
         <Keypad text={amountText} onChange={setAmountText} />
 
-        <Box sx={{ pb: `calc(8px + ${INSET_BOTTOM})` }}>
+        <Box sx={{ pb: SCREEN_BOTTOM_PADDING }}>
           <Button type="submit" variant="contained" size="large" fullWidth disabled={amount === null}>
             {submitLabel}
           </Button>

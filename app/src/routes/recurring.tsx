@@ -1,5 +1,5 @@
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
-import { Alert, Box, Button, Collapse, IconButton, InputAdornment, Stack, Switch, TextField, Typography } from '@mui/material';
+import { Box, Button, Collapse, IconButton, InputAdornment, Stack, Switch, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useFetcher, type ActionFunctionArgs } from 'react-router-dom';
 import { CategoryPicker } from '../components/CategoryPicker';
@@ -11,7 +11,7 @@ import { mutate } from '../data/store';
 import { todayIso } from '../domain/dates';
 import { formatEuros, parseEuros } from '../domain/money';
 import { useRootData } from './root';
-import { CategoryBadge, categoryName } from './shared';
+import { CategoryBadge, ErrorAlert, categoryName } from './shared';
 
 export const recurringAction = async ({ request }: ActionFunctionArgs) => {
   const form = await request.formData();
@@ -61,7 +61,7 @@ export const RecurringScreen = () => {
         </Typography>
       </Box>
 
-      {fetcher.data?.error ? <Alert severity="error">{fetcher.data.error}</Alert> : null}
+      <ErrorAlert message={fetcher.data?.error} />
 
       {data.recurring.length > 0 ? (
         <Group>
