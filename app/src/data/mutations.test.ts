@@ -1,10 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { SAVINGS_ID, SPENDING_ID, createInitialData } from './appData';
 import {
-  addDestination,
   addExpense,
   addIncome,
-  archiveDestination,
   closeMonth,
   deleteRecurring,
   deleteTransaction,
@@ -122,21 +120,6 @@ describe('recurring expenses', () => {
     const october = generated.transactions.find((tx) => tx.date === '2026-10-05')!;
     const later = generateRecurring(deleteTransaction(generated, october.id), '2026-12-10');
     expect(later.transactions.map((tx) => tx.date)).toEqual(['2026-11-05', '2026-12-05']);
-  });
-});
-
-describe('destinations', () => {
-  it('rejects a second spending destination', () => {
-    expect(() => addDestination(createInitialData(), { name: 'Other', kind: 'SPENDING' })).toThrow();
-  });
-
-  it('rejects archiving a destination with balance', () => {
-    const data = addIncome(createInitialData(), {
-      date: '2026-11-03',
-      allocations: [{ destinationId: SAVINGS_ID, amountCents: 5000 }],
-      fundsMonth: '2026-11',
-    });
-    expect(() => archiveDestination(data, SAVINGS_ID)).toThrow();
   });
 });
 

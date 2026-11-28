@@ -1,5 +1,5 @@
 import { firstTransactionDate } from '../domain/activity';
-import { available, destinationBalance } from '../domain/balances';
+import { available } from '../domain/balances';
 import { buildClosing, canClose, canReopen } from '../domain/closing';
 import { monthOf } from '../domain/dates';
 import { pendingRecurringExpenses, recurringKey } from '../domain/recurring';
@@ -7,14 +7,13 @@ import type {
   Allocation,
   Cents,
   ClosingAction,
-  DestinationKind,
   IsoDate,
   Month,
   PayrollTemplate,
   RecurringExpense,
   Transaction,
 } from '../domain/types';
-import type { AppData } from './appData';
+import { savingsDestination, spendingDestination, type AppData } from './appData';
 
 const newId = (): string => crypto.randomUUID();
 
@@ -138,8 +137,8 @@ export const closeMonth = (data: AppData, month: Month, action: ClosingAction, t
   if (firstMonth === undefined || !canClose(month, today, data.closings, firstMonth)) {
     throw new Error('CANNOT_CLOSE');
   }
-  const spending = data.destinations.find((d) => d.kind === 'SPENDING' && !d.archived);
-  const savings = data.destinations.find((d) => d.kind === 'SAVINGS' && !d.archived);
+  const spending = spendingDestination(data);
+  const savings = savingsDestination(data);
   if (!spending || !savings) {
     throw new Error('MISSING_DESTINATIONS');
   }
@@ -171,35 +170,6 @@ export const reopenMonth = (data: AppData, month: Month): AppData => {
   };
 };
 
-export const addDestination = (data: AppData, input: { name: string; kind: DestinationKind }): AppData => {
-  if (input.kind === 'SPENDING' && data.destinations.some((d) => d.kind === 'SPENDING' && !d.archived)) {
-    throw new Error('SPENDING_ALREADY_EXISTS');
-  }
-  return {
-    ...data,
-    destinations: [...data.destinations, { id: newId(), initialCents: 0, archived: false, ...input }],
-  };
-};
-
-export const renameDestination = (data: AppData, id: string, name: string): AppData => ({
-  ...data,
-  destinations: data.destinations.map((d) => (d.id === id ? { ...d, name } : d)),
-});
-
-export const archiveDestination = (data: AppData, id: string): AppData => {
-  const destination = data.destinations.find((d) => d.id === id);
-  if (!destination) {
-    throw new Error('NOT_FOUND');
-  }
-  if (destination.kind === 'SPENDING') {
-    throw new Error('CANNOT_ARCHIVE_SPENDING');
-  }
-  if (destinationBalance(destination, data.transactions) !== 0) {
-    throw new Error('DESTINATION_HAS_BALANCE');
-  }
-  return { ...data, destinations: data.destinations.map((d) => (d.id === id ? { ...d, archived: true } : d)) };
-};
-
 export const addCategory = (data: AppData, name: string): AppData => ({
   ...data,
   categories: [...data.categories, { id: newId(), name, archived: false }],
@@ -222,7 +192,7 @@ export const setPayrollTemplate = (data: AppData, payrollTemplate: PayrollTempla
 
 /** Sets how much a savings destination gets from each payroll (0 clears it). Spending gets the rest. */
 export const setPayrollLine = (data: AppData, destinationId: string, amountCents: Cents): AppData => {
-  if (data.destinations.find((d) => d.id === destinationId)?.kind === 'SPENDING') {
+  if (destinationId === spendingDestination(data)?.id) {
     throw new Error('SPENDING_GETS_THE_REST');
   }
   const others = data.payrollTemplate.lines.filter((line) => line.destinationId !== destinationId);
@@ -237,6 +207,6 @@ export const setStartingSavings = (data: AppData, amountCents: Cents): AppData =
   }
   return {
     ...data,
-    destinations: data.destinations.map((d) => (d.kind === 'SAVINGS' && !d.archived ? { ...d, initialCents: amountCents } : d)),
+    destinations: data.destinations.map((d) => (d.id === savingsDestination(data)?.id ? { ...d, initialCents: amountCents } : d)),
   };
 };

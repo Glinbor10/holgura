@@ -7,6 +7,7 @@ import { Alert, Box, Button, ButtonBase, IconButton, InputAdornment, Stack, Swit
 import { useState } from 'react';
 import { Link, useFetcher, useRevalidator, type ActionFunctionArgs } from 'react-router-dom';
 import { Group, GroupRow } from '../components/Group';
+import { savingsDestination } from '../data/appData';
 import { parseBackup, serializeBackup } from '../data/backup';
 import { errorMessage } from '../data/errors';
 import {
@@ -119,9 +120,9 @@ export const SettingsScreen = () => {
   const fetcher = useFetcher<{ error?: string }>();
   const revalidator = useRevalidator();
   const [backupMessage, setBackupMessage] = useState<{ severity: 'success' | 'error'; text: string } | null>(null);
-  const savingsDestination = data.destinations.find((destination) => destination.kind === 'SAVINGS' && !destination.archived);
-  const savingsId = savingsDestination?.id;
-  const startingSavings = savingsDestination?.initialCents ?? 0;
+  const savings = savingsDestination(data);
+  const savingsId = savings?.id;
+  const startingSavings = savings?.initialCents ?? 0;
   const categories = data.categories.filter((category) => !category.archived);
 
   const submit = (values: Record<string, string>) => fetcher.submit(values, { method: 'post' });

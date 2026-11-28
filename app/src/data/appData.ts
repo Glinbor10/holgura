@@ -42,6 +42,10 @@ export const createInitialData = (): AppData => ({
   closings: [],
 });
 
+/** The one active destination of a kind. The interface only shows "available" and "saved", so there is one of each. */
+export const spendingDestination = (data: AppData): Destination | undefined => data.destinations.find((d) => d.kind === 'SPENDING' && !d.archived);
+export const savingsDestination = (data: AppData): Destination | undefined => data.destinations.find((d) => d.kind === 'SAVINGS' && !d.archived);
+
 /** Persistence port: one implementation per platform (SQLite on Android, localStorage on web). */
 export interface Repository {
   load(): Promise<AppData | null>;

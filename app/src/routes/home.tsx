@@ -5,6 +5,7 @@ import { useMemo, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { BalanceChart } from '../components/BalanceChart';
 import { Money } from '../components/Money';
+import { savingsDestination } from '../data/appData';
 import { firstMonthWithActivity } from '../data/mutations';
 import { firstTransactionDate, latestTransactions } from '../domain/activity';
 import { allowance, available, destinationBalance } from '../domain/balances';
@@ -60,9 +61,8 @@ export const HomeScreen = () => {
   const daysLeft = daysLeftInMonth(today);
   const toClose = nextMonthToClose(firstMonthWithActivity(data), data.closings, today);
   const backupDue = isBackupDue(data.lastExportAt, firstTransactionDate(data.transactions), today);
-  const savings = data.destinations
-    .filter((destination) => destination.kind === 'SAVINGS' && !destination.archived)
-    .reduce((sum, destination) => sum + destinationBalance(destination, data.transactions), 0);
+  const savingsAccount = savingsDestination(data);
+  const savings = savingsAccount ? destinationBalance(savingsAccount, data.transactions) : 0;
   const payrollPending = !payrollReceived(data.transactions, month);
   const savedThisMonth = monthlySavings(month, data.destinations, data.transactions);
   const byCategory = spendingByCategory(month, data.transactions).slice(0, 6);

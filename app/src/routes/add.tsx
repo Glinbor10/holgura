@@ -6,6 +6,7 @@ import { Form, Link, redirect, useActionData, useSearchParams, type ActionFuncti
 import { AmountDisplay, Keypad } from '../components/AmountPad';
 import { CategoryPicker } from '../components/CategoryPicker';
 import { TrendBackdrop } from '../components/TrendBackdrop';
+import { spendingDestination } from '../data/appData';
 import { errorMessage } from '../data/errors';
 import { addExpense, addIncome } from '../data/mutations';
 import { mutate } from '../data/store';
@@ -29,8 +30,9 @@ export const addAction = async ({ request }: ActionFunctionArgs) => {
     if (kind === 'expense') {
       await mutate((data) => addExpense(data, { date, amountCents: amount, categoryId: String(form.get('categoryId')), note }));
     } else if (kind === 'income') {
-      const allocations = [{ destinationId: String(form.get('destinationId')), amountCents: amount }];
-      await mutate((data) => addIncome(data, { date, allocations, fundsMonth: String(form.get('fundsMonth')), note }));
+      await mutate((data) =>
+        addIncome(data, { date, allocations: [{ destinationId: spendingDestination(data)?.id ?? '', amountCents: amount }], fundsMonth: String(form.get('fundsMonth')), note }),
+      );
     }
   } catch (error) {
     return { error: errorMessage(error) };
@@ -44,7 +46,6 @@ export const AddScreen = () => {
   const { data, today } = useRootData();
   const result = useActionData() as { error?: string } | undefined;
   const [params] = useSearchParams();
-  const spendingId = data.destinations.find((destination) => destination.kind === 'SPENDING')?.id ?? '';
   const categories = data.categories.filter((category) => !category.archived);
   const initialKind = params.get('kind');
   const kind: Kind = isKind(initialKind) ? initialKind : 'expense';
@@ -73,7 +74,6 @@ export const AddScreen = () => {
         <input type="hidden" name="kind" value={kind} />
         <input type="hidden" name="amount" value={amountText} />
         <input type="hidden" name="categoryId" value={categoryId} />
-        <input type="hidden" name="destinationId" value={spendingId} />
 
         {result?.error ? <Alert severity="error">{result.error}</Alert> : null}
 

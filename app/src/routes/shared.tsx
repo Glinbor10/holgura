@@ -53,9 +53,6 @@ export const monthLabel = (month: Month): string =>
 export const shortMonth = (month: Month): string =>
   new Intl.DateTimeFormat('es-ES', { month: 'short' }).format(toDate(`${month}-01`)).replace('.', '');
 
-export const longDay = (date: IsoDate): string =>
-  new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long' }).format(toDate(date));
-
 /** Positive amounts are green (income) or gold (savings). */
 export const AmountText = ({ cents, plus = false, positive = 'income' }: { cents: number; plus?: boolean; positive?: 'income' | 'savings' }) => (
   <Typography

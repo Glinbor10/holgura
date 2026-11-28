@@ -11,7 +11,7 @@ import { centsToInput, formatEuros, parseEuros } from '../domain/money';
 import { PAYROLL_NOTE, applyTemplate, defaultFundsMonth } from '../domain/payrollSplit';
 import { INSET_BOTTOM, INSET_TOP } from '../insets';
 import { useRootData } from './root';
-import { monthLabel } from './shared';
+import { destinationName, monthLabel } from './shared';
 
 export const payrollAction = async ({ request }: ActionFunctionArgs) => {
   const form = await request.formData();
@@ -42,7 +42,6 @@ export const PayrollScreen = () => {
   const amount = parseEuros(amountText);
   const split = applyTemplate(amount ?? 0, template);
   const months = [monthOf(today), nextMonth(monthOf(today)), nextMonth(nextMonth(monthOf(today)))];
-  const nameOf = (id: string) => data.destinations.find((destination) => destination.id === id)?.name ?? '';
 
   return (
     <Form method="post">
@@ -84,7 +83,7 @@ export const PayrollScreen = () => {
               <Typography sx={{ fontWeight: 800, mb: 0.5 }}>Así se reparte</Typography>
               {split.allocations.map((allocation) => (
                 <Stack key={allocation.destinationId} direction="row" sx={{ justifyContent: 'space-between', py: 0.25 }}>
-                  <Typography sx={{ color: 'text.secondary' }}>{nameOf(allocation.destinationId)}</Typography>
+                  <Typography sx={{ color: 'text.secondary' }}>{destinationName(data, allocation.destinationId)}</Typography>
                   <Typography sx={{ fontWeight: 700 }}>{formatEuros(allocation.amountCents)}</Typography>
                 </Stack>
               ))}
